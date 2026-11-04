@@ -1,0 +1,8 @@
+# Build inputs / originals — not for version control
+google_drive/
+.preview/
+node_modules/
+
+# OS
+.DS_Store
+image-search/
