@@ -124,11 +124,14 @@ if [ "$SYNC_MODE" = "sync" ]; then
   # --- sync: keep the directory, replace its contents -----------------------
   # /usr/share/nginx/html may be package-owned; never rm -rf the directory.
   if [ -d "$WEBROOT" ] && [ -n "$(ls -A "$WEBROOT" 2>/dev/null)" ]; then
-    rm -rf "$BACKUP"
-    mkdir -p "$BACKUP"
-    cp -a "$WEBROOT/." "$BACKUP/" 2>/dev/null || true
+    if mkdir -p "$BACKUP" 2>/dev/null && cp -a "$WEBROOT/." "$BACKUP/" 2>/dev/null; then
+      echo "    previous release saved to $BACKUP"
+    else
+      echo "    warning: could not write $BACKUP (need sudo?) — continuing without a backup" >&2
+      rm -rf "$BACKUP" 2>/dev/null || true
+    fi
   fi
-  mkdir -p "$WEBROOT"
+  mkdir -p "$WEBROOT" || { echo "error: cannot create $WEBROOT" >&2; exit 1; }
   # Clear contents (including dotfiles) but leave the directory itself.
   find "$WEBROOT" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
   cp -a "$STAGING/." "$WEBROOT/"
@@ -146,8 +149,20 @@ chown -R "$SERVICE_OWNER:$SERVICE_OWNER" "$WEBROOT" 2>/dev/null || true
 chmod -R a+rX "$WEBROOT"
 
 # Final assertion, run against the web root nginx will actually serve.
+# Checking only that index.html exists is not enough: a stock nginx welcome
+# page satisfies that, which would let a failed publish look successful.
 if [ ! -f "$WEBROOT/index.html" ]; then
   echo "error: $WEBROOT/index.html missing after publish — aborting" >&2
+  exit 1
+fi
+if ! grep -q "Johns River Valley" "$WEBROOT/index.html"; then
+  echo "error: $WEBROOT/index.html is not our page (stale or stock content)." >&2
+  echo "       Expected the site in $WEBROOT — check permissions and re-run." >&2
+  exit 1
+fi
+PUBLISHED_PAGES=$(find "$WEBROOT" -maxdepth 1 -name '*.html' | wc -l)
+if [ "$PUBLISHED_PAGES" -lt 10 ]; then
+  echo "error: only $PUBLISHED_PAGES html pages in $WEBROOT (expected 12)" >&2
   exit 1
 fi
 if [ -e "$WEBROOT/src" ] || [ -e "$WEBROOT/.git" ] || [ -e "$WEBROOT/build.mjs" ]; then
@@ -159,5 +174,5 @@ if [ "$SYNC_MODE" = "sync" ] && [ -e "$WEBROOT/.previous" ]; then
   exit 1
 fi
 
-say "Published to $WEBROOT"
+say "Published $PUBLISHED_PAGES pages to $WEBROOT"
 nginx -t 2>/dev/null && nginx -s reload 2>/dev/null && echo "nginx reloaded" || echo "(reload nginx yourself if config changed)"
