@@ -38,8 +38,21 @@ const PAGES = [
   { slug: "faq", file: "faq.html", nav: "", title: "Frequently Asked Questions", desc: "Tuition, drop-off times, packing lists, staff screening, allergies, financial aid, and everything else families ask before camp." },
   { slug: "register", file: "register.html", nav: "", title: "Register for 2026 Summer Camp", desc: "Register for a 2026 JRVC summer session. Deposit, cancellation policy, and what happens next." },
   { slug: "visit", file: "visit.html", nav: "", title: "Visit & Contact JRVC", desc: "Directions to 6211 NC-90, Collettsville NC. Phone, email, mailing address, and what to expect on the drive in." },
+  { slug: "404", file: "404.html", nav: "", title: "Page not found", desc: "That page has moved or never existed. Find summer camp, retreats, and contact details for Johns River Valley Camp." },
   { slug: "privacy", file: "privacy.html", nav: "", title: "Privacy Policy", desc: "What information Johns River Valley Camp collects, why, and how to have it removed." },
 ];
+
+
+/* Asset version — appended as ?v= to CSS/JS URLs so the one-year immutable
+   cache in the nginx config can never serve a stale stylesheet. */
+import { createHash } from "node:crypto";
+const assetVersion = (() => {
+  const h = createHash("sha256");
+  for (const f of ["assets/css/site.css", "assets/js/site.js"]) {
+    try { h.update(readFileSync(f)); } catch {}
+  }
+  return h.digest("hex").slice(0, 8);
+})();
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -62,7 +75,7 @@ function head(p) {
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/site.css?v=${assetVersion}">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>`;
@@ -155,7 +168,7 @@ function footer() {
     </div>
   </div>
 </footer>
-<script src="assets/js/site.js" defer></script>
+<script src="assets/js/site.js?v=${assetVersion}" defer></script>
 </body>
 </html>`;
 }
