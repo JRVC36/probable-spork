@@ -18,6 +18,20 @@ const SITE = {
   est: "1936",
 };
 
+
+/* ---------------------------------------------------------------------------
+   Form endpoints.
+   Paste the Apps Script Web App URL (ends in /exec) after deploying
+   deploy/apps-script/Code.gs. See deploy/GOOGLE-SHEET.md.
+   Leave empty and the form falls back to emailing the camp instead of
+   pretending to have received anything.
+--------------------------------------------------------------------------- */
+const ENDPOINT_REGISTRATION = "";
+
+const ENDPOINTS = {
+  __ENDPOINT_REGISTRATION__: ENDPOINT_REGISTRATION,
+};
+
 const NAV = [
   { href: "summer-camp.html", label: "Summer Camp" },
   { href: "retreats.html", label: "Retreats" },
@@ -175,10 +189,18 @@ function footer() {
 
 async function build() {
   for (const p of PAGES) {
-    const body = await readFile(path.join("src/pages", p.file), "utf8");
+    let body = await readFile(path.join("src/pages", p.file), "utf8");
+    for (const [token, value] of Object.entries(ENDPOINTS)) {
+      body = body.split(token).join(value);
+    }
     const html = head(p) + header(p.nav) + body + footer();
     writeFileSync(`${p.slug}.html`, html, "utf8");
     console.log(`  ${p.slug}.html`.padEnd(24), `${(html.length / 1024).toFixed(1)} KB`);
+  }
+  if (!ENDPOINT_REGISTRATION) {
+    console.log("\n\u26a0  ENDPOINT_REGISTRATION is empty — register.html will refuse to submit");
+    console.log("   It shows a 'call the camp' message, never a false confirmation.");
+    console.log("   Deploy deploy/apps-script/Code.gs and paste the /exec URL into build.mjs.");
   }
   console.log(`\nBuilt ${PAGES.length} pages.`);
 }

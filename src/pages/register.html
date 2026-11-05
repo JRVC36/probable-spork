@@ -22,7 +22,14 @@
         <h2 style="margin-bottom:0.4rem">Camper registration</h2>
         <p style="color:var(--ink-faint); font-size:0.92rem; margin-bottom:1.75rem">Fields marked <span style="color:var(--clay)">*</span> are required.</p>
 
-        <form data-demo novalidate>
+        <form id="regForm"
+              method="post"
+              action="__ENDPOINT_REGISTRATION__"
+              data-endpoint="__ENDPOINT_REGISTRATION__"
+              data-secret="CHANGE_ME_TO_A_LONG_RANDOM_STRING"
+              data-success="Thanks &mdash; your camper is registered."
+              data-fail="We could not save that. Please call the camp at 828-387-5736 so we can take it by phone."
+              >
           <fieldset style="border:0; padding:0; margin:0 0 1.5rem">
             <legend class="fieldset-legend" style="margin-bottom:0.75rem">Which session?</legend>
             <div class="radio-group">
@@ -121,13 +128,16 @@
             </label>
           </div>
 
+          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+            <label for="_gotcha">Leave this field blank</label>
+            <input type="text" id="_gotcha" name="_gotcha" tabindex="-1" autocomplete="off">
+          </div>
+
           <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top:1.5rem">Continue to deposit &mdash; $100</button>
 
           <p class="note" style="margin-top:0.9rem">You will not be charged on this page. Payment is handled on the next step, and we follow up by email to confirm your camper&rsquo;s spot.</p>
 
-          <p class="form-status" hidden tabindex="-1" role="status">
-            <strong>Thanks &mdash; we have it.</strong> A confirmation email is on its way within two business days. If you need us sooner, call Kevin at <a href="tel:+18283875736">828-387-5736</a>.
-          </p>
+          <p class="form-status" hidden tabindex="-1" role="status" aria-live="polite"></p>
         </form>
       </div>
 

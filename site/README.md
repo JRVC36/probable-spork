@@ -94,11 +94,25 @@ Day camp ($249), college service trips ($250), sibling discounts, and the 50%-is
 - **Director:** I resolved the site's contradiction (director's statement signed *Phil Hardy*, contact page listing *Kevin Russell*) in favour of Kevin Russell, who appears as current ED on `/contact-us`, `/service-trips`, and `/book-online`. Confirm, and update `about.html`.
 
 ### Forms
-All forms use `data-demo` and validate + confirm inline without submitting anywhere. Before launch:
+**Registration posts to a Google Sheet** via an Apps Script Web App — see
+[`deploy/GOOGLE-SHEET.md`](../deploy/GOOGLE-SHEET.md). Two values must be set:
 
-1. Point each `<form>` at a real endpoint (Formspree, Netlify Forms, or the camp's CRM) and remove `data-demo`.
-2. Wire real payment: registration deposit and the donation form both currently stop at "Continue to payment."
-3. Decide where children's medical data lands. The audit flagged Google Forms as an exposure; this redesign's registration form inherits that risk until it posts somewhere appropriate.
+- `ENDPOINT_REGISTRATION` in `build.mjs` (the deployed `/exec` URL)
+- `data-secret` on the form in `src/pages/register.html` (must match `SECRET` in `Code.gs`)
+
+Until both are set the form **refuses to submit** and tells the visitor to
+call the camp — it never shows a false confirmation. The script also fails
+closed if `SECRET` is left as the placeholder.
+
+The other five forms (retreat, mission, contact, donation, newsletter) still
+carry `data-demo` and now say **"Demo form. Nothing was sent."** rather than
+pretending. Wire them the same way, or leave them clearly labelled.
+
+Still outstanding:
+1. **No payment is taken.** The registration button says "Continue to deposit
+   — $100" but no card is charged. Add Stripe/PayPal, or move to a camp
+   management system, before advertising a deposit.
+2. No capacity limits — overbooking a session is possible. The audit flagged Google Forms as an exposure; this redesign's registration form inherits that risk until it posts somewhere appropriate.
 
 ### Photography
 All images in `assets/img/` come from the camp's own **Drive "Photos" folder** and are real: the autumn valley aerials, the Boger Shuford lodge, the stone chapel, and a 2021 camper rafting photo. They are optimized to web sizes (90% smaller than the 12–28 MB originals).

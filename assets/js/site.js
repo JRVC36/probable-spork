@@ -77,25 +77,112 @@
   });
 
   /* ---------- Forms ----------
-     Demo build: forms validate and confirm inline.
-     Wire `action` to the camp's real endpoint before launch. */
-  var forms = document.querySelectorAll("form[data-demo]");
+     Two modes:
+       • data-demo                  → validate and confirm inline (demo forms)
+       • action + data-endpoint set → POST for real to the Google Apps Script
+                                      endpoint and report the actual result.
+     The confirmation is NEVER shown unless the request genuinely succeeded. */
+  var forms = document.querySelectorAll("form");
   Array.prototype.forEach.call(forms, function (form) {
+    var endpoint = form.getAttribute("data-endpoint");
+
     form.addEventListener("submit", function (e) {
-      e.preventDefault();
       if (!form.checkValidity()) {
+        e.preventDefault();
         form.reportValidity();
         return;
       }
-      var status = form.querySelector(".form-status");
-      if (status) {
-        status.hidden = false;
-        status.focus && status.focus();
-        status.scrollIntoView({ block: "nearest", behavior: "smooth" });
+
+      // Demo form, or no endpoint configured → never claim to have sent it.
+      if (form.hasAttribute("data-demo") || !endpoint) {
+        e.preventDefault();
+        if (form.hasAttribute("data-demo")) {
+          showStatus(form, "demo", "");
+          form.reset();
+        } else {
+          showStatus(form, "fail", form.getAttribute("data-fail"));
+        }
+        return;
       }
-      form.reset();
+
+      e.preventDefault();
+      submitToEndpoint(form, endpoint);
     });
   });
+
+  function showStatus(form, kind, text) {
+    var status = form.querySelector(".form-status");
+    if (!status) return;
+    if (kind === "demo") {
+      status.innerHTML =
+        "<strong>Demo form.</strong> Nothing was sent &mdash; this form is not connected yet. " +
+        'Call the camp at <a href="tel:+18283875736">828-387-5736</a>.';
+    } else if (kind === "pending") {
+      status.innerHTML = "<strong>Sending&hellip;</strong> Please don&rsquo;t close this page.";
+    } else if (kind === "ok") {
+      status.innerHTML =
+        "<strong>" + (text || "Received.") + "</strong> " +
+        "A confirmation email is on its way within two business days. " +
+        'If you need us sooner, call <a href="tel:+18283875736">828-387-5736</a>.';
+    } else {
+      status.innerHTML =
+        "<strong>That didn&rsquo;t go through.</strong> " +
+        (text ? text + " " : "") +
+        'Please call the camp at <a href="tel:+18283875736">828-387-5736</a> so we can take it by phone.';
+    }
+    status.hidden = false;
+    status.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function submitToEndpoint(form, endpoint) {
+    var button = form.querySelector('[type="submit"]');
+    var original = button ? button.textContent : "";
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Sending…";
+    }
+    showStatus(form, "pending");
+
+    var payload = {};
+    new FormData(form).forEach(function (value, key) {
+      if (value instanceof File) return;
+      payload[key] = payload[key] === undefined ? value : payload[key] + ", " + value;
+    });
+    payload._secret = form.getAttribute("data-secret") || "";
+    payload._ajax = "1";
+    payload._page = window.location.pathname;
+
+    fetch(endpoint, {
+      method: "POST",
+      // text/plain keeps this a "simple request" — Apps Script has no CORS
+      // preflight support, and the body is JSON regardless.
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      redirect: "follow",
+    })
+      .then(function (res) {
+        return res.json().catch(function () {
+          return { ok: false };
+        });
+      })
+      .then(function (out) {
+        if (out && out.ok) {
+          showStatus(form, "ok", form.getAttribute("data-success"));
+          form.reset();
+        } else {
+          showStatus(form, "fail", form.getAttribute("data-fail"));
+        }
+      })
+      .catch(function () {
+        showStatus(form, "fail", form.getAttribute("data-fail"));
+      })
+      .then(function () {
+        if (button) {
+          button.disabled = false;
+          button.textContent = original;
+        }
+      });
+  }
 
   /* ---------- Current year in footer ---------- */
   Array.prototype.forEach.call(document.querySelectorAll("[data-year]"), function (el) {
