@@ -12,7 +12,8 @@
 set -euo pipefail
 
 REPO_DIR="${REPO_DIR:-/opt/jrvc.org/repo}"     # the clone (may live outside the web root)
-WEBROOT="${WEBROOT:-/var/www/jrvc.org}"        # nginx `root`
+WEBROOT="${WEBROOT:-/usr/share/nginx/html}"    # nginx `root`
+SYNC_MODE="${SYNC_MODE:-auto}"                 # auto | swap | sync (see below)
 BRANCH="${BRANCH:-main}"
 SERVICE_OWNER="${SERVICE_OWNER:-www-data}"
 
@@ -51,6 +52,25 @@ if [ ! -w "$REPO_DIR/.git" ]; then
   echo "       Run publish.sh as the user who owns the clone, with sudo, or:" >&2
   echo "         sudo chown -R $(id -un):$(id -gn) $REPO_DIR" >&2
   exit 1
+fi
+
+# Normalise the web root: a trailing slash would make "${WEBROOT}.previous"
+# resolve to a hidden dir INSIDE the web root.
+WEBROOT="${WEBROOT%/}"
+[ -n "$WEBROOT" ] || { echo "error: WEBROOT resolves to an empty path" >&2; exit 1; }
+[ "$WEBROOT" != "/" ] || { echo "error: refusing to use / as the web root" >&2; exit 1; }
+
+# Package-managed directories (/usr/share/nginx/html, Debian's default) must be
+# LEFT IN PLACE and emptied — deleting and recreating them fights the package
+# manager. User-owned roots can be atomically swapped, which keeps the old
+# release intact for rollback.
+if [ "$SYNC_MODE" = "auto" ]; then
+  case "$WEBROOT" in
+    /usr/share/nginx/html|/var/www/html|/srv/www/htdocs|/usr/local/nginx/html)
+      SYNC_MODE="sync" ;;
+    *)
+      SYNC_MODE="swap" ;;
+  esac
 fi
 
 say "Fetching $BRANCH"
@@ -94,27 +114,48 @@ fi
 PAGE_COUNT=$(find "$STAGING" -maxdepth 1 -name '*.html' | wc -l)
 say "Export contains $PAGE_COUNT pages and $(find "$STAGING/assets" -type f | wc -l) assets"
 
-# ---------------------------------------------------------------- 4. swap into place
-mkdir -p "$(dirname "$WEBROOT")"
+# ---------------------------------------------------------------- 4. publish
 BACKUP="${WEBROOT}.previous"
-if [ -d "$WEBROOT" ] && [ -n "$(ls -A "$WEBROOT" 2>/dev/null)" ]; then
-  rm -rf "$BACKUP"
-  mv "$WEBROOT" "$BACKUP"
+mkdir -p "$(dirname "$WEBROOT")"
+
+say "Publishing ($SYNC_MODE mode) to $WEBROOT"
+
+if [ "$SYNC_MODE" = "sync" ]; then
+  # --- sync: keep the directory, replace its contents -----------------------
+  # /usr/share/nginx/html may be package-owned; never rm -rf the directory.
+  if [ -d "$WEBROOT" ] && [ -n "$(ls -A "$WEBROOT" 2>/dev/null)" ]; then
+    rm -rf "$BACKUP"
+    mkdir -p "$BACKUP"
+    cp -a "$WEBROOT/." "$BACKUP/" 2>/dev/null || true
+  fi
+  mkdir -p "$WEBROOT"
+  # Clear contents (including dotfiles) but leave the directory itself.
+  find "$WEBROOT" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
+  cp -a "$STAGING/." "$WEBROOT/"
+else
+  # --- swap: replace the directory atomically ------------------------------
+  if [ -d "$WEBROOT" ] && [ -n "$(ls -A "$WEBROOT" 2>/dev/null)" ]; then
+    rm -rf "$BACKUP"
+    mv "$WEBROOT" "$BACKUP"
+  fi
+  rm -rf "$WEBROOT"
+  mv "$STAGING" "$WEBROOT"
 fi
-# If the web root still exists (empty, or just created above), remove it first —
-# otherwise `mv STAGING WEBROOT` nests the staging dir INSIDE the web root.
-rm -rf "$WEBROOT"
-mv "$STAGING" "$WEBROOT"
+
 chown -R "$SERVICE_OWNER:$SERVICE_OWNER" "$WEBROOT" 2>/dev/null || true
 chmod -R a+rX "$WEBROOT"
 
 # Final assertion, run against the web root nginx will actually serve.
 if [ ! -f "$WEBROOT/index.html" ]; then
-  echo "error: $WEBROOT/index.html missing after swap — aborting" >&2
+  echo "error: $WEBROOT/index.html missing after publish — aborting" >&2
   exit 1
 fi
-if [ -e "$WEBROOT/src" ] || [ -e "$WEBROOT/.git" ]; then
+if [ -e "$WEBROOT/src" ] || [ -e "$WEBROOT/.git" ] || [ -e "$WEBROOT/build.mjs" ]; then
   echo "error: non-public files present in $WEBROOT" >&2
+  exit 1
+fi
+if [ "$SYNC_MODE" = "sync" ] && [ -e "$WEBROOT/.previous" ]; then
+  echo "error: stale .previous inside the web root — remove $WEBROOT/.previous" >&2
   exit 1
 fi
 
