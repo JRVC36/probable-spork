@@ -9,7 +9,8 @@ no API key to rotate — but read the security section before you deploy.
 ```
 register.html  ──POST──▶  Apps Script Web App  ──▶  Google Sheet
     (fetch, JSON)              (/exec)                 (one row per camper)
-                               └──▶ email notification (optional)
+                               ├──▶ director notification email (kevin@jrvc.org)
+                               └──▶ parent confirmation email + 2 health PDFs
 ```
 
 ---
@@ -135,14 +136,25 @@ What this setup does and does not protect:
 
 ---
 
+## Automatic Parent Confirmation Email & Attachments
+
+When `SEND_PARENT_CONFIRMATION` is `true` in `deploy/apps-script/Code.gs`, every
+successful registration automatically sends a confirmation email to the parent
+(`data.email`, with `Reply-To` set to `NOTIFY_EMAIL`) and attaches the two PDF
+health documents from Google Drive:
+
+- **`Camper-Health-History-Form.pdf`** — Drive ID `112O9axC9-jKRgLTImXHxrLoa5OJpYt53`
+- **`Camper-HealthCare-Recommendations.pdf`** — Drive ID `1vD7_JdbExAdxKhABoppvSJ6GQBJvP9n2`
+
+Running `setupSheet()` in the Apps Script editor authorizes Drive access and
+verifies that both PDFs can be fetched before you deploy.
+
+---
+
 ## What this does *not* do
 
-- **No payment.** The button says "Continue to deposit — $100", but no card is
-  taken. Add Stripe/PayPal to the Sheet flow, or switch to a camp management
-  system, before you advertise a deposit.
-- **No confirmation email to the parent.** Only the director is notified
-  (`NOTIFY_EMAIL`). Add `MailApp.sendEmail(data.email, …)` inside `doPost` if
-  you want the family to get a receipt too.
+- **No online card payment.** The form records the registration and explains
+  that camp staff will follow up with instructions for the $100 deposit.
 - **No capacity limits.** Overbooking a session is possible. A `COUNTIF` guard
   per session is a reasonable next step.
 - **No editing.** Rows are append-only; corrections happen in the Sheet.

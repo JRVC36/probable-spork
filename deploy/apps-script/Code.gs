@@ -1,17 +1,19 @@
 /**
- * JRVC — camper registration → Google Sheet
+ * JRVC — camper registration → Google Sheet + automatic parent confirmation email
  * ---------------------------------------------------------------------------
- * Receives the POST from register.html and appends one row per camper.
+ * Receives the POST from register.html, appends one row per camper, notifies
+ * the camp director, and replies to the parent with the two health PDFs attached.
  *
  * SETUP (see deploy/GOOGLE-SHEET.md for the full walkthrough):
  *   1. Create the Google Sheet, then Extensions → Apps Script.
  *   2. Paste this file in, replacing the default contents.
  *   3. Change SECRET below to a long random string.
- *   4. Run setupSheet() once and authorise it.
- *   5. Deploy → New deployment → Web app
+ *   4. Run setupSheet() once and authorise it (grants Sheet, Mail, and Drive access).
+ *   5. Optional: run testAttachments() to verify both Drive PDFs can be read.
+ *   6. Deploy → New deployment → Web app
  *        Execute as: Me
  *        Who has access: Anyone
- *   6. Copy the /exec URL into ENDPOINT_REGISTRATION in build.mjs.
+ *   7. Copy the /exec URL into ENDPOINT_REGISTRATION in build.mjs.
  *
  * SECURITY NOTES
  *   - A Web App deployed as "Anyone" is a public URL. SECRET + the honeypot
@@ -34,6 +36,32 @@ const SHEET_NAME = 'Registrations';
 
 /** Optional: get an email for each registration. '' to disable. */
 const NOTIFY_EMAIL = 'kevin@jrvc.org';
+
+/** Send an automatic confirmation email + attachments to the parent/guardian. */
+const SEND_PARENT_CONFIRMATION = true;
+
+/** Google Drive PDFs attached to every parent confirmation email. */
+const PARENT_ATTACHMENTS = [
+  {
+    id: '112O9axC9-jKRgLTImXHxrLoa5OJpYt53',
+    filename: 'Camper-Health-History-Form.pdf',
+  },
+  {
+    id: '1vD7_JdbExAdxKhABoppvSJ6GQBJvP9n2',
+    filename: 'Camper-HealthCare-Recommendations.pdf',
+  },
+];
+
+/** Human-readable session names for the parent confirmation email. */
+const SESSION_LABELS = {
+  'juniors-crafts':  'Juniors · Arts & Crafts (June 21–27, 2026 — $485)',
+  'juniors-cooking': 'Juniors · Cooking (July 12–18, 2026 — $485)',
+  'mh-paddle':       'Middle High · Paddle (July 12–18, 2026 — $545)',
+  'mh-caving':       'Middle High · Caving (July 19–25, 2026 — $545)',
+  'sh-adventure':    'Senior High · High Adventure (June 21–27, 2026 — $545)',
+  'sh-paddle':       'Senior High · Paddle (June 28–July 4, 2026 — $545)',
+  'day-camp':        'Day Camp ($249/week)',
+};
 
 /** Column order. Keys must match the `name` attributes in the HTML form. */
 const COLUMNS = [
@@ -100,10 +128,12 @@ function doPost(e) {
     var sheet = getSheet_();
     sheet.appendRow(row);
 
+    // 1. Notify the camp director
     if (NOTIFY_EMAIL) {
       try {
         MailApp.sendEmail({
           to: NOTIFY_EMAIL,
+          replyTo: String(data.email).trim(),
           subject: 'Camp registration — ' + row[3] + ' ' + row[4] + ' (' + row[1] + ')',
           body: COLUMNS.map(function (c, i) {
             return c.label + ': ' + (c.key === '_timestamp' ? new Date() : row[i]);
@@ -112,6 +142,15 @@ function doPost(e) {
       } catch (mailErr) {
         // Never fail the submission because a notification bounced.
         console.error('notify failed: ' + mailErr);
+      }
+    }
+
+    // 2. Send automatic confirmation email + health PDFs to parent/guardian
+    if (SEND_PARENT_CONFIRMATION && data.email) {
+      try {
+        sendParentConfirmation_(data);
+      } catch (replyErr) {
+        console.error('parent confirmation failed: ' + replyErr);
       }
     }
 
@@ -130,6 +169,64 @@ function doGet() {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+/**
+ * Sends a confirmation email to the parent/guardian with the PDF attachments
+ * configured in PARENT_ATTACHMENTS.
+ */
+function sendParentConfirmation_(data) {
+  var attachments = [];
+  PARENT_ATTACHMENTS.forEach(function (item) {
+    if (!item || !item.id) return;
+    try {
+      var blob = DriveApp.getFileById(item.id).getAs(MimeType.PDF);
+      if (item.filename) blob.setName(item.filename);
+      attachments.push(blob);
+    } catch (fileErr) {
+      console.error('Could not load attachment ' + item.id + ': ' + fileErr);
+    }
+  });
+
+  var sessionDesc = SESSION_LABELS[data.session] || data.session;
+  if (data.session === 'day-camp' && data.dayweek) {
+    sessionDesc += ' — ' + data.dayweek;
+  }
+
+  var subject =
+    'Registration received for ' +
+    data.camper_first +
+    ' ' +
+    data.camper_last +
+    ' — Johns River Valley Camp';
+
+  var body =
+    'Dear ' + data.parent_name + ',\n\n' +
+    'Thank you for registering ' + data.camper_first + ' ' + data.camper_last +
+    ' for Summer 2026 at Johns River Valley Camp!\n\n' +
+    'REGISTRATION SUMMARY\n' +
+    '• Camper: ' + data.camper_first + ' ' + data.camper_last +
+    (data.grade ? ' (Rising grade ' + data.grade + ')' : '') + '\n' +
+    '• Session: ' + sessionDesc + '\n\n' +
+    'NEXT STEPS & ATTACHED FORMS\n' +
+    '1. $100 Deposit: A $100 deposit holds your camper\'s spot (applied to tuition and refundable until 30 days before the session). We will follow up if you need payment arrangement details.\n' +
+    '2. Health Forms (Attached): Please review the attached Camper Health-Care Recommendations and complete the Camper Health History Form prior to arrival.\n' +
+    '3. Check-In: Residential check-in is Sunday from 3:00–4:30 p.m. (pick-up Saturday 9:00–10:00 a.m.). Day camp runs Monday–Friday, 8:30 a.m.–4:30 p.m.\n\n' +
+    'If you have any questions or would like to inquire about the Campership Fund, simply reply to this email or call Kevin at 828-387-5736.\n\n' +
+    'Grace and peace,\n' +
+    'Johns River Valley Camp\n' +
+    '6211 NC-90, Collettsville, NC 28611\n' +
+    '828-387-5736 | kevin@jrvc.org\n' +
+    'https://www.jrvc.org';
+
+  MailApp.sendEmail({
+    to: String(data.email).trim(),
+    replyTo: NOTIFY_EMAIL || 'kevin@jrvc.org',
+    name: 'Johns River Valley Camp',
+    subject: subject,
+    body: body,
+    attachments: attachments,
+  });
+}
 
 /**
  * Accepts both an XHR POST (JSON in postData, text/plain to avoid preflight)
@@ -163,7 +260,7 @@ function respond_(ok, code, extra, wantsHtml) {
   if (wantsHtml) {
     var title = ok ? 'Registration received' : 'Something went wrong';
     var msg = ok
-      ? 'Thanks — your camper is registered. We will confirm by email within two business days.'
+      ? 'Thanks — your camper is registered. A confirmation email with your health forms is on its way.'
       : 'Your registration did not save. Please call the camp at 828-387-5736 so we can take it by phone.';
     var html =
       '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
@@ -210,7 +307,8 @@ function createSheet_(ss) {
 }
 
 /**
- * Run this ONCE from the Apps Script editor to create the header row.
+ * Run this ONCE from the Apps Script editor to create the header row and
+ * verify Drive access to the parent attachment PDFs.
  * Also safe to re-run: it will not duplicate the sheet.
  */
 function setupSheet() {
@@ -223,5 +321,16 @@ function setupSheet() {
     .setBackground('#e8dfcd');
   sheet.setFrozenRows(1);
   sheet.autoResizeColumns(1, headers.length);
-  SpreadsheetApp.getUi().alert('Sheet "' + SHEET_NAME + '" is ready with ' + headers.length + ' columns.');
+
+  var loaded = [];
+  PARENT_ATTACHMENTS.forEach(function (item) {
+    if (!item || !item.id) return;
+    var f = DriveApp.getFileById(item.id);
+    loaded.push((item.filename || f.getName()) + ' (' + Math.round(f.getSize() / 1024) + ' KB)');
+  });
+
+  SpreadsheetApp.getUi().alert(
+    'Sheet "' + SHEET_NAME + '" is ready with ' + headers.length + ' columns.\n\n' +
+    'Verified parent email attachments:\n• ' + loaded.join('\n• ')
+  );
 }
