@@ -34,6 +34,16 @@ git -C "$REPO_DIR" checkout --quiet "$BRANCH"
 git -C "$REPO_DIR" reset --hard --quiet "origin/$BRANCH"
 say "Now at $(git -C "$REPO_DIR" rev-parse --short HEAD) — $(git -C "$REPO_DIR" log -1 --pretty=%s)"
 
+# ---------------------------------------------------------------- 1b. pre-flight
+# Fail loudly and early. Without this, pointing at the wrong branch yields a
+# confusing node stack trace, or worse, publishes an empty site.
+if [ ! -f "$REPO_DIR/build.mjs" ] || [ ! -d "$REPO_DIR/src/pages" ]; then
+  echo "error: branch '$BRANCH' at $(git -C "$REPO_DIR" rev-parse --short HEAD) does not contain the site." >&2
+  echo "       build.mjs / src/pages are missing. Is the work merged into '$BRANCH'?" >&2
+  echo "       Override with: BRANCH=<branch> $0" >&2
+  exit 1
+fi
+
 # ---------------------------------------------------------------- 2. build
 command -v node >/dev/null || { echo "error: node is required to build the site" >&2; exit 1; }
 say "Building"
@@ -51,6 +61,13 @@ if [ -e "$STAGING/.git" ] || [ -e "$STAGING/src" ] || [ -e "$STAGING/build.mjs" 
   echo "error: export leaked non-public files — check .gitattributes" >&2
   exit 1
 fi
+
+if [ ! -f "$STAGING/index.html" ] || [ ! -f "$STAGING/404.html" ]; then
+  echo "error: export is missing built pages — was the build run?" >&2
+  exit 1
+fi
+PAGE_COUNT=$(find "$STAGING" -maxdepth 1 -name '*.html' | wc -l)
+say "Export contains $PAGE_COUNT pages and $(find "$STAGING/assets" -type f | wc -l) assets"
 
 # ---------------------------------------------------------------- 4. swap into place
 mkdir -p "$WEBROOT"
