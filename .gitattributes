@@ -1,0 +1,13 @@
+# Files that must never reach the web root.
+# `git archive` honours these, so a deploy export contains ONLY the public site.
+# Docs: https://git-scm.com/docs/gitattributes#_export_ignore
+
+/.gitignore       export-ignore
+/.gitattributes   export-ignore
+/build.mjs        export-ignore
+/netlify.toml     export-ignore
+/src              export-ignore
+/site             export-ignore
+/deploy           export-ignore
+/.preview         export-ignore
+/*.md             export-ignore
