@@ -2,7 +2,7 @@
 #
 # Pull the site from git and publish it into the nginx web root.
 #
-#   ./deploy/publish.sh              # update /var/www/jrvc.org from origin
+#   ./deploy/publish.sh              # update /usr/share/nginx/html from origin
 #   WEBROOT=/srv/www/jrvc ./deploy/publish.sh
 #
 # Safe to re-run: it fetches, rebuilds, and swaps the web root atomically.
