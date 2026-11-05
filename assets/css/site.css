@@ -145,8 +145,8 @@ section { padding-block: clamp(3.5rem, 6vw, 6.5rem); }
 .bg-sand { background: var(--sand); }
 .bg-forest { background: var(--forest); color: #e8efe9; }
 .bg-forest h1, .bg-forest h2, .bg-forest h3, .bg-forest h4 { color: var(--white); }
-.bg-forest a { color: #d9c3a8; }
-.bg-forest a:hover { color: #f0dcc4; }
+.bg-forest a:not(.btn) { color: #d9c3a8; }
+.bg-forest a:not(.btn):hover { color: #f0dcc4; }
 
 .eyebrow {
   font-family: var(--sans);
@@ -163,7 +163,8 @@ section { padding-block: clamp(3.5rem, 6vw, 6.5rem); }
 .eyebrow::before {
   content: ""; width: 1.75rem; height: 1px; background: currentColor; opacity: 0.55; flex: none;
 }
-.bg-forest .eyebrow { color: var(--sage); }
+.bg-forest .eyebrow,
+.cta-band .eyebrow { color: var(--sage); }
 
 .lede {
   font-size: clamp(1.125rem, 1rem + 0.55vw, 1.3rem);
@@ -179,7 +180,8 @@ section { padding-block: clamp(3.5rem, 6vw, 6.5rem); }
 /* ─────────────────────────────────────────────
    Buttons
    ───────────────────────────────────────────── */
-.btn {
+.btn,
+a.btn {
   --btn-bg: var(--clay);
   --btn-fg: #fff;
   display: inline-flex;
@@ -199,11 +201,19 @@ section { padding-block: clamp(3.5rem, 6vw, 6.5rem); }
   text-decoration: none;
   cursor: pointer;
   transition: transform 0.18s var(--ease), background-color 0.18s var(--ease),
-              box-shadow 0.18s var(--ease), border-color 0.18s var(--ease);
+              box-shadow 0.18s var(--ease), border-color 0.18s var(--ease),
+              color 0.18s var(--ease);
   box-shadow: 0 1px 2px rgba(23, 33, 28, 0.12);
 }
-.btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); color: var(--btn-fg); }
-.btn:active { transform: translateY(0); }
+.btn:hover,
+a.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  color: var(--btn-fg);
+  text-decoration: none;
+}
+.btn:active,
+a.btn:active { transform: translateY(0); }
 
 .btn-primary { --btn-bg: var(--clay); }
 .btn-primary:hover { --btn-bg: var(--clay-deep); }
@@ -214,12 +224,40 @@ section { padding-block: clamp(3.5rem, 6vw, 6.5rem); }
 .btn-ghost {
   --btn-bg: transparent;
   --btn-fg: var(--forest-deep);
-  border-color: var(--line);
+  border-color: rgba(22, 41, 31, 0.28);
 }
-.btn-ghost:hover { --btn-bg: var(--white); --btn-fg: var(--forest-deep); border-color: var(--sand-deep); }
+.btn-ghost:hover {
+  --btn-bg: var(--white);
+  --btn-fg: var(--forest-deep);
+  border-color: var(--forest-deep);
+}
 
-.bg-forest .btn-ghost { --btn-fg: #fff; border-color: rgba(255, 255, 255, 0.35); }
-.bg-forest .btn-ghost:hover { --btn-bg: rgba(255, 255, 255, 0.1); --btn-fg: #fff; }
+.hero .btn-ghost,
+.page-head .btn-ghost,
+.bg-forest .btn-ghost,
+.cta-band .btn-ghost,
+.callout--forest .btn-ghost,
+.site-foot .btn-ghost {
+  --btn-bg: rgba(255, 255, 255, 0.1);
+  --btn-fg: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.hero .btn-ghost,
+.page-head .btn-ghost {
+  --btn-bg: rgba(15, 30, 22, 0.55);
+  border-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(6px);
+}
+.hero .btn-ghost:hover,
+.page-head .btn-ghost:hover,
+.bg-forest .btn-ghost:hover,
+.cta-band .btn-ghost:hover,
+.callout--forest .btn-ghost:hover,
+.site-foot .btn-ghost:hover {
+  --btn-bg: rgba(255, 255, 255, 0.22);
+  --btn-fg: #fff;
+  border-color: rgba(255, 255, 255, 0.88);
+}
 
 .btn-light { --btn-bg: #fff; --btn-fg: var(--forest-deep); }
 .btn-light:hover { --btn-bg: var(--sand); --btn-fg: var(--forest-deep); }
@@ -935,8 +973,8 @@ select {
   padding-block: clamp(2.75rem, 5vw, 4.5rem) 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
-.site-foot a { color: #c9d6cd; text-decoration: none; }
-.site-foot a:hover { color: var(--white); text-decoration: underline; text-underline-offset: 3px; }
+.site-foot a:not(.btn) { color: #c9d6cd; text-decoration: none; }
+.site-foot a:not(.btn):hover { color: var(--white); text-decoration: underline; text-underline-offset: 3px; }
 
 .foot-top {
   display: grid;
