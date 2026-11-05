@@ -52,7 +52,7 @@ say "Building"
 # ---------------------------------------------------------------- 3. export public tree
 # git archive emits only tracked files, minus everything marked export-ignore.
 STAGING="$(mktemp -d)"
-trap 'rm -rf "$STAGING"' EXIT
+trap 'rm -rf "$STAGING" 2>/dev/null || true' EXIT
 
 say "Exporting public tree"
 git -C "$REPO_DIR" archive --format=tar HEAD | tar -x -C "$STAGING"
@@ -70,15 +70,28 @@ PAGE_COUNT=$(find "$STAGING" -maxdepth 1 -name '*.html' | wc -l)
 say "Export contains $PAGE_COUNT pages and $(find "$STAGING/assets" -type f | wc -l) assets"
 
 # ---------------------------------------------------------------- 4. swap into place
-mkdir -p "$WEBROOT"
+mkdir -p "$(dirname "$WEBROOT")"
 BACKUP="${WEBROOT}.previous"
 if [ -d "$WEBROOT" ] && [ -n "$(ls -A "$WEBROOT" 2>/dev/null)" ]; then
   rm -rf "$BACKUP"
   mv "$WEBROOT" "$BACKUP"
 fi
+# If the web root still exists (empty, or just created above), remove it first —
+# otherwise `mv STAGING WEBROOT` nests the staging dir INSIDE the web root.
+rm -rf "$WEBROOT"
 mv "$STAGING" "$WEBROOT"
 chown -R "$SERVICE_OWNER:$SERVICE_OWNER" "$WEBROOT" 2>/dev/null || true
 chmod -R a+rX "$WEBROOT"
+
+# Final assertion, run against the web root nginx will actually serve.
+if [ ! -f "$WEBROOT/index.html" ]; then
+  echo "error: $WEBROOT/index.html missing after swap — aborting" >&2
+  exit 1
+fi
+if [ -e "$WEBROOT/src" ] || [ -e "$WEBROOT/.git" ]; then
+  echo "error: non-public files present in $WEBROOT" >&2
+  exit 1
+fi
 
 say "Published to $WEBROOT"
 nginx -t 2>/dev/null && nginx -s reload 2>/dev/null && echo "nginx reloaded" || echo "(reload nginx yourself if config changed)"
