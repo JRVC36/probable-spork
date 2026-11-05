@@ -51,7 +51,10 @@ node --version    # expect v20.x or newer
 sudo mkdir -p /var/www/jrvc.org /opt/jrvc.org
 sudo chown -R www-data:www-data /var/www/jrvc.org
 
-# Clone directory — owned by whoever runs publish.sh (you, or a deploy user)
+# Clone directory — owned by whoever runs publish.sh (you, or a deploy user).
+# Create the PARENT only; publish.sh clones into it and wants to create the
+# directory itself. If you pre-create /opt/jrvc.org/repo, chown it to the
+# same user, or `git clone` will refuse ("destination path already exists").
 sudo mkdir -p /opt/jrvc.org
 sudo chown -R "$USER":"$USER" /opt/jrvc.org
 
@@ -125,13 +128,74 @@ challenge. HTTPS comes in step 7.
 
 ---
 
-## 6. First deploy
+## 6. Clone the repository
+
+**publish.sh does not clone for you on a fresh box unless you give it `REPO_URL`
+and the target path does not exist yet.** Cleaner to clone once explicitly so
+you can see it succeed:
 
 ```bash
-sudo REPO_URL=git@github.com:JRVC36/probable-spork.git \
+sudo -u "$USER" git clone git@github.com:JRVC36/probable-spork.git /opt/jrvc.org/repo
+
+# Confirm you got the branch that actually has the site
+git -C /opt/jrvc.org/repo branch -a
+git -C /opt/jrvc.org/repo log --oneline -3
+```
+
+> **Clone as yourself, not with `sudo`.** Cloning as root and then publishing
+> as your normal user is the single most common first-run failure — git fails
+> part-way through with `cannot open '.git/FETCH_HEAD': Permission denied`.
+> `publish.sh` now detects this and says so instead, but avoiding it is easier.
+> If you already did it: `sudo chown -R "$USER":"$USER" /opt/jrvc.org/repo`.
+
+If `main` is empty (`git log` shows only "Initial commit"), the site work has
+not been merged yet. Either merge it, or deploy the branch directly:
+
+```bash
+git -C /opt/jrvc.org/repo checkout arena/840d3c33-probable-spork
+```
+
+### Getting updates later
+
+`publish.sh` runs this internally on every invocation — it is the git pull:
+
+```bash
+git -C /opt/jrvc.org/repo fetch --prune origin
+git -C /opt/jrvc.org/repo checkout --quiet "$BRANCH"
+git -C /opt/jrvc.org/repo reset --hard --quiet "origin/$BRANCH"
+```
+
+`reset --hard` is deliberate: the clone is a deployment artifact, never edited
+by hand, so local changes are discarded to guarantee it matches the remote.
+
+To pull and publish in one go:
+
+```bash
+sudo REPO_DIR=/opt/jrvc.org/repo WEBROOT=/var/www/jrvc.org \
+     BRANCH=main /opt/jrvc.org/repo/deploy/publish.sh
+```
+
+To update the clone *without* publishing (e.g. to inspect a change):
+
+```bash
+sudo -u "$USER" git -C /opt/jrvc.org/repo pull --ff-only
+```
+
+---
+
+## 7. First deploy
+
+```bash
+sudo REPO_DIR=/opt/jrvc.org/repo \
+     WEBROOT=/var/www/jrvc.org \
      BRANCH=main \
      /opt/jrvc.org/repo/deploy/publish.sh
 ```
+
+> Run it with `sudo` (it writes to `/var/www` and reloads nginx), but **as the
+> owner of the clone** where possible. If the clone is owned by your user and
+> you run the script as root, git's ownership check can still trip — the script
+> scopes `safe.directory` to the clone to avoid that.
 
 Watch for these lines:
 
@@ -157,7 +221,7 @@ curl -s  http://localhost/.git/config -o /dev/null -w '%{http_code}\n'          
 
 ---
 
-## 7. TLS (after DNS points at the box)
+## 8. TLS (after DNS points at the box)
 
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
@@ -178,7 +242,7 @@ sudo certbot renew --dry-run
 
 ---
 
-## 8. Updating from then on
+## 9. Updating from then on
 
 ```bash
 sudo /opt/jrvc.org/repo/deploy/publish.sh
@@ -225,9 +289,10 @@ GitHub webhook only if you need instant deploys.
 
 ---
 
-## 9. Go-live checklist
+## 10. Go-live checklist
 
 - [ ] Site work merged to `main` (or `BRANCH` pinned)
+- [ ] Clone exists at `/opt/jrvc.org/repo`, owned by you, on the right branch
 - [ ] `publish.sh` published 12 pages and 15 assets
 - [ ] `http://` serves the site, `nginx -t` clean
 - [ ] Certbot issued certs; `https://www.jrvc.org` loads; apex redirects to www
@@ -251,5 +316,7 @@ GitHub webhook only if you need instant deploys.
 | `nginx -t` fails on `ssl_certificate` | You uncommented the 443 block before Certbot issued certs. |
 | Site loads but CSS unstyled | `root` points at the clone, not `/var/www/jrvc.org`; or `/assets/` denied. |
 | Security headers missing on 404s | A `location` block with its own `add_header` drops inherited headers. Headers here use `always`; re-check any block you add. |
+| `cannot open '.git/FETCH_HEAD': Permission denied` | Clone created with `sudo`. Run `sudo chown -R "$USER":"$USER" /opt/jrvc.org/repo`. |
+| `destination path '/opt/jrvc.org/repo' already exists` | You pre-created the clone dir. Clone into it directly, or delete it and let `publish.sh` create it. |
 | `mv: cannot move … Directory not empty` | Old `publish.sh`. Current version removes the web root before the swap. |
 | Certbot fails validation | DNS not propagated, port 80 blocked, or the ACME location removed. |
