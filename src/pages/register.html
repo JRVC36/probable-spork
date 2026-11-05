@@ -14,13 +14,13 @@
   </div>
 </section>
 
-<section class="section-flush-top" style="padding-top:clamp(2.5rem,4vw,4rem)">
+<section class="section-flush-top">
   <div class="shell">
-    <div class="split" style="align-items:start; gap:clamp(1.75rem,4vw,3.5rem)">
+    <div class="split split--form">
 
       <div class="form-card" id="form">
-        <h2 style="margin-bottom:0.4rem">Camper registration</h2>
-        <p style="color:var(--ink-faint); font-size:0.92rem; margin-bottom:1.75rem">Fields marked <span style="color:var(--clay)">*</span> are required.</p>
+        <h2 class="h2-tight">Camper registration</h2>
+        <p class="form-req-note">Fields marked <span class="req">*</span> are required.</p>
 
         <form id="regForm"
               method="post"
@@ -30,8 +30,8 @@
               data-success="Thanks &mdash; your camper is registered."
               data-fail="We could not save that. Please call the camp at 828-387-5736 so we can take it by phone."
               >
-          <fieldset style="border:0; padding:0; margin:0 0 1.5rem">
-            <legend class="fieldset-legend" style="margin-bottom:0.75rem">Which session?</legend>
+          <fieldset class="form-fieldset">
+            <legend class="fieldset-legend fieldset-legend--spaced">Which session?</legend>
             <div class="radio-group">
               <label class="radio-opt"><input type="radio" name="session" value="juniors-crafts" required> Juniors &middot; Arts &amp; Crafts &mdash; Jun 21&ndash;27 &middot; $485</label>
               <label class="radio-opt"><input type="radio" name="session" value="juniors-cooking"> Juniors &middot; Cooking &mdash; Jul 12&ndash;18 &middot; $485</label>
@@ -39,7 +39,7 @@
               <label class="radio-opt"><input type="radio" name="session" value="mh-caving"> Middle High &middot; Caving &mdash; Jul 19&ndash;25 &middot; $545</label>
               <label class="radio-opt"><input type="radio" name="session" value="sh-adventure"> Senior High &middot; High Adventure &mdash; Jun 21&ndash;27 &middot; $545</label>
               <label class="radio-opt"><input type="radio" name="session" value="sh-paddle"> Senior High &middot; Paddle &mdash; Jun 28&ndash;Jul 4 &middot; $545</label>
-              <label class="radio-opt"><input type="radio" name="session" value="day-camp"> Day Camp &mdash; $249/week <span style="color:var(--ink-faint)">(tell us the week below)</span></label>
+              <label class="radio-opt"><input type="radio" name="session" value="day-camp"> Day Camp &mdash; $249/week <span class="radio-sub">(tell us the week below)</span></label>
             </div>
           </fieldset>
 
@@ -83,9 +83,9 @@
             </div>
           </div>
 
-          <hr class="hr" style="margin-block:2rem">
+          <hr class="hr hr--form">
 
-          <h3 style="font-family:var(--sans); font-size:0.74rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:1.15rem">Parent or guardian</h3>
+          <h3 class="form-subhead">Parent or guardian</h3>
 
           <div class="field">
             <label for="pname">Full name <span class="req">*</span></label>
@@ -114,47 +114,47 @@
             <textarea id="med" name="medical" rows="3"></textarea>
           </div>
 
-          <div class="field" style="margin-top:1.5rem">
-            <label style="display:flex; gap:0.65rem; align-items:flex-start; font-weight:400; font-size:0.92rem; color:var(--ink-soft)">
-              <input type="checkbox" name="newsletter" style="width:1.05rem; height:1.05rem; margin-top:0.2rem; accent-color:var(--moss); flex:none">
+          <div class="field mt-2">
+            <label class="check-opt">
+              <input type="checkbox" name="newsletter">
               <span>Send me camp news and next year&rsquo;s registration dates. We email a few times a year &mdash; never more.</span>
             </label>
           </div>
 
-          <div class="field" style="margin-top:1rem">
-            <label style="display:flex; gap:0.65rem; align-items:flex-start; font-weight:400; font-size:0.92rem; color:var(--ink-soft)">
-              <input type="checkbox" name="agreement" required style="width:1.05rem; height:1.05rem; margin-top:0.2rem; accent-color:var(--moss); flex:none">
+          <div class="field mt-1">
+            <label class="check-opt">
+              <input type="checkbox" name="agreement" required>
               <span>I have read the <a href="faq.html">camp policies</a> and understand the $100 deposit is applied to tuition and refundable until 30 days before the session. <span class="req">*</span></span>
             </label>
           </div>
 
-          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+          <div aria-hidden="true" class="hp-field">
             <label for="_gotcha">Leave this field blank</label>
             <input type="text" id="_gotcha" name="_gotcha" tabindex="-1" autocomplete="off">
           </div>
 
-          <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top:1.5rem">Submit registration</button>
+          <button type="submit" class="btn btn-primary btn-lg btn-block mt-2">Submit registration</button>
 
-          <p class="note" style="margin-top:0.9rem">No payment is collected on this page. Within two business days we will email your confirmation and instructions for the $100 deposit that holds your camper&rsquo;s spot.</p>
+          <p class="note note--tight">No payment is collected on this page. Within two business days we will email your confirmation and instructions for the $100 deposit that holds your camper&rsquo;s spot.</p>
 
           <p class="form-status" hidden tabindex="-1" role="status" aria-live="polite"></p>
         </form>
       </div>
 
       <div>
-        <div class="facts-card" style="margin-bottom:1.5rem">
+        <div class="facts-card facts-card--spaced">
           <h2>What happens next</h2>
-          <ol class="steps" style="padding:1.4rem; margin:0; gap:1.25rem">
+          <ol class="steps steps--card">
             <li>
-              <h3 style="font-size:0.98rem; font-family:var(--sans); font-weight:650; margin-bottom:0.25rem">You submit this form</h3>
+              <h3>You submit this form</h3>
               <p>A $100 deposit reserves the spot. The balance is due two weeks before your session.</p>
             </li>
             <li>
-              <h3 style="font-size:0.98rem; font-family:var(--sans); font-weight:650; margin-bottom:0.25rem">We confirm by email</h3>
-              <p>Within two business days, with the medical form and a packing list attached.</p>
+              <h3>We confirm by email</h3>
+              <p>Immediately upon submission, with the Camper Health History Form and HealthCare Recommendations attached.</p>
             </li>
             <li>
-              <h3 style="font-size:0.98rem; font-family:var(--sans); font-weight:650; margin-bottom:0.25rem">You arrive Sunday</h3>
+              <h3>You arrive Sunday</h3>
               <p>Check-in is 3:00&ndash;4:30 p.m. Bring the medical form; leave the phone if you can.</p>
             </li>
           </ol>
@@ -165,12 +165,12 @@
           <p>Please still register &mdash; or call first. The Campership Fund covers part or all of tuition, and asking is confidential. Call <a href="tel:+18283875736">828-387-5736</a> or email <a href="mailto:kevin@jrvc.org">kevin@jrvc.org</a>.</p>
         </div>
 
-        <div class="callout callout--forest" style="margin-top:1.5rem">
+        <div class="callout callout--forest mt-2">
           <h3>Prefer paper?</h3>
           <p>We will mail or email a PDF registration form. Call the camp office at <a href="tel:+18287547067">828-754-7067</a>.</p>
         </div>
 
-        <p class="note" style="margin-top:1.5rem">Your information is used only to run your camper&rsquo;s registration. See our <a href="privacy.html">privacy policy</a>.</p>
+        <p class="note mt-2">Your information is used only to run your camper&rsquo;s registration. See our <a href="privacy.html">privacy policy</a>.</p>
       </div>
     </div>
   </div>
