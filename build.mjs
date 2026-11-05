@@ -136,43 +136,49 @@ function footer() {
   return `
 <footer class="site-foot">
   <div class="shell">
-    <div class="foot-grid">
+    <div class="foot-top">
       <div class="foot-brand">
         <p class="foot-name">Johns River Valley<br>Camp &amp; Retreat Center</p>
         <p class="foot-note">Outdoor ministry of the Southern Conference, United Church of Christ. Welcoming campers, families, and groups since ${SITE.est}.</p>
         <p class="foot-note foot-addr">${SITE.address}</p>
       </div>
-      <div>
-        <h2 class="foot-h">Visit</h2>
-        <ul class="foot-list">
-          <li><a href="summer-camp.html">Summer Camp</a></li>
-          <li><a href="retreats.html">Retreats</a></li>
-          <li><a href="mission-trips.html">Mission Trips</a></li>
-          <li><a href="facilities.html">Facilities</a></li>
-          <li><a href="visit.html">Directions</a></li>
-        </ul>
-      </div>
-      <div>
-        <h2 class="foot-h">Connect</h2>
-        <ul class="foot-list">
-          <li><a href="get-involved.html">Give</a></li>
-          <li><a href="get-involved.html#volunteer">Volunteer</a></li>
-          <li><a href="get-involved.html#staff">Work at Camp</a></li>
-          <li><a href="faq.html">FAQ</a></li>
-          <li><a href="visit.html">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <h2 class="foot-h">Get in touch</h2>
-        <ul class="foot-list foot-contact">
-          <li><a href="${SITE.phoneHref}">${SITE.phone}</a> <span class="foot-dim">cell</span></li>
-          <li><a href="tel:+18287547067">${SITE.campPhone}</a> <span class="foot-dim">camp office</span></li>
-          <li><a href="mailto:${SITE.email}">${SITE.email}</a></li>
-          <li><a href="${SITE.maps}" target="_blank" rel="noopener">Directions on Google Maps</a></li>
-        </ul>
-        <a class="btn btn-ghost btn-sm foot-give" href="get-involved.html">Support the Campership Fund</a>
+
+      <div class="foot-groups">
+        <div class="foot-group">
+          <h2 class="foot-h">Visit</h2>
+          <ul class="foot-list">
+            <li><a href="summer-camp.html">Summer Camp</a></li>
+            <li><a href="retreats.html">Retreats</a></li>
+            <li><a href="mission-trips.html">Mission Trips</a></li>
+            <li><a href="facilities.html">Facilities</a></li>
+            <li><a href="visit.html">Directions</a></li>
+          </ul>
+        </div>
+        <div class="foot-group">
+          <h2 class="foot-h">Connect</h2>
+          <ul class="foot-list">
+            <li><a href="get-involved.html">Give</a></li>
+            <li><a href="get-involved.html#volunteer">Volunteer</a></li>
+            <li><a href="get-involved.html#staff">Work at Camp</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="visit.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="foot-group">
+          <h2 class="foot-h">Get in touch</h2>
+          <ul class="foot-list foot-contact">
+            <li><a href="${SITE.phoneHref}">${SITE.phone}</a> <span class="foot-dim">cell</span></li>
+            <li><a href="tel:+18287547067">${SITE.campPhone}</a> <span class="foot-dim">camp office</span></li>
+            <li><a href="mailto:${SITE.email}">${SITE.email}</a></li>
+            <li><a href="${SITE.maps}" target="_blank" rel="noopener">Google Maps</a></li>
+          </ul>
+        </div>
       </div>
     </div>
+    <div class="foot-cta">
+      <a class="btn btn-ghost btn-sm foot-give" href="get-involved.html">Support the Campership Fund</a>
+    </div>
+
     <div class="foot-base">
       <p>&copy; ${SITE.est}–2026 Johns River Valley Camp. A 501(c)(3) nonprofit.</p>
       <ul class="foot-legal">
