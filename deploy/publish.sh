@@ -101,6 +101,10 @@ trap 'rm -rf "$STAGING" 2>/dev/null || true' EXIT
 
 say "Exporting public tree"
 "${GIT[@]}" -C "$REPO_DIR" archive --format=tar HEAD | tar -x -C "$STAGING"
+cp -f "$REPO_DIR"/*.html "$STAGING"/
+for f in sitemap.xml robots.txt; do
+  [ -f "$REPO_DIR/$f" ] && cp -f "$REPO_DIR/$f" "$STAGING"/
+done
 
 if [ -e "$STAGING/.git" ] || [ -e "$STAGING/src" ] || [ -e "$STAGING/build.mjs" ]; then
   echo "error: export leaked non-public files — check .gitattributes" >&2

@@ -671,6 +671,8 @@ a.card .card-foot .arrow-link { color: var(--clay-deep); }
 .callout p:last-child { margin-bottom: 0; }
 .callout--forest { background: var(--forest); border-color: var(--forest-deep); border-left-color: var(--sage); color: #dbe7d9; }
 .callout--forest h3, .callout--forest h4 { color: #fff; }
+.callout--forest a:not(.btn) { color: #d9c3a8; }
+.callout--forest a:not(.btn):hover { color: #f0dcc4; }
 
 .note {
   font-size: 0.9rem; color: var(--ink-faint);
@@ -678,6 +680,8 @@ a.card .card-foot .arrow-link { color: var(--clay-deep); }
   margin-top: 1.1rem;
 }
 .note::before { content: "✳"; color: var(--clay); flex: none; font-size: 0.85em; line-height: 1.6; }
+.bg-forest .note { color: #a8bfa9; }
+.bg-forest .note::before { color: var(--sage); }
 
 /* Key facts panel */
 .facts-card {
@@ -705,6 +709,27 @@ a.card .card-foot .arrow-link { color: var(--clay-deep); }
 .facts-list .fv { font-weight: 650; color: var(--forest-deep); text-align: right; font-variant-numeric: tabular-nums; }
 .facts-card .facts-cta { padding: 1.25rem 1.4rem; border-top: 1px solid var(--line-soft); background: #fdfbf7; }
 .facts-card .facts-cta .btn { width: 100%; }
+
+.bg-forest .facts-card {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+.bg-forest .facts-card h2,
+.bg-forest .facts-card h3 {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #a8bfa9;
+}
+.bg-forest .facts-list { background: transparent; }
+.bg-forest .facts-list li { border-color: rgba(255, 255, 255, 0.14); }
+.bg-forest .facts-list dt,
+.bg-forest .facts-list .fk { color: #a8bfa9; }
+.bg-forest .facts-list .fv,
+.bg-forest .facts-list a.fv { color: #fff; }
+.bg-forest .facts-card .facts-cta {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.16);
+}
 
 /* ─────────────────────────────────────────────
    Accordion (FAQ)
@@ -772,11 +797,15 @@ a.card .card-foot .arrow-link { color: var(--clay-deep); }
    ───────────────────────────────────────────── */
 .form-card {
   background: var(--white);
+  color: var(--ink);
   border: 1px solid var(--line-soft);
   border-radius: var(--r-lg);
   padding: clamp(1.4rem, 3vw, 2.4rem);
   box-shadow: var(--shadow-md);
 }
+.form-card h1, .form-card h2, .form-card h3, .form-card h4 { color: var(--forest-deep); }
+.form-card a:not(.btn) { color: var(--clay-deep); }
+.form-card a:not(.btn):hover { color: var(--clay); }
 .field { margin-bottom: 1.15rem; }
 .field label, .fieldset-legend {
   display: block;
@@ -864,6 +893,12 @@ select {
 }
 .steps h3, .steps h4 { grid-column: 2; margin-bottom: 0.2rem; }
 .steps p { grid-column: 2; margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+.bg-forest .steps li::before {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: var(--white);
+}
+.bg-forest .steps p { color: #c9d6cd; }
 
 /* Checklist */
 .checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }

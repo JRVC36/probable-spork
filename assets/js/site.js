@@ -71,14 +71,67 @@
     });
 
     /* Deep-link support: #resident-camp opens that tab. */
-    var hash = window.location.hash.replace("#", "");
-    var wanted = hash && tablist.querySelector('[data-anchor="' + hash + '"]');
-    if (wanted) select(wanted, false);
+    function checkHash() {
+      var hash = window.location.hash.replace("#", "");
+      var wanted = hash && tablist.querySelector('[data-anchor="' + hash + '"]');
+      if (wanted) select(wanted, false);
+    }
+    checkHash();
+    window.addEventListener("hashchange", checkHash);
   });
+
+  /* ---------- Registration session pre-selection & conditional dayweek ---------- */
+  var regForm = document.getElementById("regForm");
+  if (regForm) {
+    var sessionRadios = Array.prototype.slice.call(
+      regForm.querySelectorAll('input[name="session"]')
+    );
+    var dayweekField = document.getElementById("dayweekField");
+    var dayweekSelect = document.getElementById("dayweek");
+
+    var syncDayweek = function () {
+      if (!dayweekField || !dayweekSelect) return;
+      var checked = regForm.querySelector('input[name="session"]:checked');
+      var isDayCamp = Boolean(checked && checked.value === "day-camp");
+      dayweekField.hidden = !isDayCamp;
+      dayweekSelect.required = isDayCamp;
+      if (!isDayCamp) dayweekSelect.value = "";
+    };
+
+    if (typeof URLSearchParams !== "undefined") {
+      var params = new URLSearchParams(window.location.search);
+      var wantedSession = params.get("session");
+      var wantedDayweek = params.get("dayweek");
+
+      if (wantedSession) {
+        sessionRadios.forEach(function (radio) {
+          if (radio.value === wantedSession) radio.checked = true;
+        });
+      }
+      if (wantedDayweek && dayweekSelect) {
+        Array.prototype.forEach.call(dayweekSelect.options, function (opt) {
+          if (
+            opt.value &&
+            (opt.value === wantedDayweek || opt.value.indexOf(wantedDayweek) === 0)
+          ) {
+            dayweekSelect.value = opt.value;
+          }
+        });
+      }
+    }
+
+    sessionRadios.forEach(function (radio) {
+      radio.addEventListener("change", syncDayweek);
+    });
+    regForm.addEventListener("reset", function () {
+      setTimeout(syncDayweek, 0);
+    });
+    syncDayweek();
+  }
 
   /* ---------- Forms ----------
      Two modes:
-       • data-demo                  → validate and confirm inline (demo forms)
+       • data-demo                  → validate and offer pre-filled email / phone
        • action + data-endpoint set → POST for real to the Google Apps Script
                                       endpoint and report the actual result.
      The confirmation is NEVER shown unless the request genuinely succeeded. */
@@ -96,11 +149,11 @@
       // Demo form, or no endpoint configured → never claim to have sent it.
       if (form.hasAttribute("data-demo") || !endpoint) {
         e.preventDefault();
+        var mailto = buildMailtoFallback(form);
         if (form.hasAttribute("data-demo")) {
-          showStatus(form, "demo", "");
-          form.reset();
+          showStatus(form, "demo", "", mailto);
         } else {
-          showStatus(form, "fail", form.getAttribute("data-fail"));
+          showStatus(form, "fail", form.getAttribute("data-fail"), mailto);
         }
         return;
       }
@@ -110,13 +163,35 @@
     });
   });
 
-  function showStatus(form, kind, text) {
+  function buildMailtoFallback(form) {
+    var lines = [];
+    new FormData(form).forEach(function (value, key) {
+      if (key.indexOf("_") === 0) return;
+      var text = String(value || "").trim();
+      if (!text) return;
+      lines.push(key.replace(/_/g, " ") + ": " + text);
+    });
+    var pageTitle = document.title.replace(/\s*—\s*JRVC$/, "");
+    var subject = "JRVC inquiry — " + pageTitle;
+    var body = lines.join("\n");
+    return (
+      "mailto:kevin@jrvc.org?subject=" +
+      encodeURIComponent(subject) +
+      (body ? "&body=" + encodeURIComponent(body) : "")
+    );
+  }
+
+  function showStatus(form, kind, text, mailto) {
     var status = form.querySelector(".form-status");
     if (!status) return;
+    var emailLink = mailto || "mailto:kevin@jrvc.org";
     if (kind === "demo") {
       status.innerHTML =
-        "<strong>Demo form.</strong> Nothing was sent &mdash; this form is not connected yet. " +
-        'Call the camp at <a href="tel:+18283875736">828-387-5736</a>.';
+        "<strong>Online submission isn&rsquo;t connected on this form yet.</strong> " +
+        'Click <a href="' +
+        emailLink +
+        '">send these details by email to kevin@jrvc.org</a> or call ' +
+        '<a href="tel:+18283875736">828-387-5736</a>.';
     } else if (kind === "pending") {
       status.innerHTML = "<strong>Sending&hellip;</strong> Please don&rsquo;t close this page.";
     } else if (kind === "ok") {
@@ -128,7 +203,10 @@
       status.innerHTML =
         "<strong>That didn&rsquo;t go through.</strong> " +
         (text ? text + " " : "") +
-        'Please call the camp at <a href="tel:+18283875736">828-387-5736</a> so we can take it by phone.';
+        'You can <a href="' +
+        emailLink +
+        '">email these details to kevin@jrvc.org</a> or call ' +
+        '<a href="tel:+18283875736">828-387-5736</a>.';
     }
     status.hidden = false;
     status.scrollIntoView({ block: "nearest", behavior: "smooth" });
@@ -152,6 +230,8 @@
     payload._ajax = "1";
     payload._page = window.location.pathname;
 
+    var mailto = buildMailtoFallback(form);
+
     fetch(endpoint, {
       method: "POST",
       // text/plain keeps this a "simple request" — Apps Script has no CORS
@@ -170,11 +250,11 @@
           showStatus(form, "ok", form.getAttribute("data-success"));
           form.reset();
         } else {
-          showStatus(form, "fail", form.getAttribute("data-fail"));
+          showStatus(form, "fail", form.getAttribute("data-fail"), mailto);
         }
       })
       .catch(function () {
-        showStatus(form, "fail", form.getAttribute("data-fail"));
+        showStatus(form, "fail", form.getAttribute("data-fail"), mailto);
       })
       .then(function () {
         if (button) {
