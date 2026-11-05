@@ -12,8 +12,20 @@ gzip_vary on;
 gzip_comp_level 6;
 gzip_min_length 512;
 gzip_types text/plain text/css text/xml application/javascript
-           application/json image/svg+xml application/manifest+json;
-# woff2 is already compressed; do not re-compress it.
+           application/json application/ld+json image/svg+xml
+           application/manifest+json;
+# woff2, jpg, and webp are already compressed; do not re-compress them.
+
+# ------------------------------------------------------------------ security headers (server fallback)
+# NOTE: In nginx, any `location` block that defines its own `add_header`
+# (such as `add_header Cache-Control ...`) drops all server-level `add_header`
+# directives. We therefore include the security headers inside each location
+# block below that sets Cache-Control, as well as at server scope.
+add_header X-Content-Type-Options  "nosniff" always;
+add_header X-Frame-Options         "SAMEORIGIN" always;
+add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
+add_header Permissions-Policy      "geolocation=(), camera=(), microphone=()" always;
+add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
 
 # ------------------------------------------------------------------ caching
 # Images never change in place, and CSS/JS are requested with a ?v=<hash>
@@ -21,20 +33,33 @@ gzip_types text/plain text/css text/xml application/javascript
 location /assets/ {
     access_log off;
     expires 1y;
-    add_header Cache-Control "public, max-age=31536000, immutable";
+    add_header Cache-Control           "public, max-age=31536000, immutable" always;
+    add_header X-Content-Type-Options  "nosniff" always;
+    add_header X-Frame-Options         "SAMEORIGIN" always;
+    add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
     try_files $uri =404;
 }
 
 # HTML must always revalidate, or visitors see stale prices.
 location ~* \.html$ {
     expires -1;
-    add_header Cache-Control "public, max-age=0, must-revalidate";
+    add_header Cache-Control           "public, max-age=0, must-revalidate" always;
+    add_header X-Content-Type-Options  "nosniff" always;
+    add_header X-Frame-Options         "SAMEORIGIN" always;
+    add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy      "geolocation=(), camera=(), microphone=()" always;
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
     try_files $uri =404;
 }
 
 location = / {
     expires -1;
-    add_header Cache-Control "public, max-age=0, must-revalidate";
+    add_header Cache-Control           "public, max-age=0, must-revalidate" always;
+    add_header X-Content-Type-Options  "nosniff" always;
+    add_header X-Frame-Options         "SAMEORIGIN" always;
+    add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy      "geolocation=(), camera=(), microphone=()" always;
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
     try_files /index.html =404;
 }
 
@@ -49,15 +74,13 @@ location ~* \.(mjs|md|toml|sh)$ { return 404; }
 error_page 404 /404.html;
 location = /404.html {
     internal;
-    add_header Cache-Control "no-store";
+    add_header Cache-Control           "no-store" always;
+    add_header X-Content-Type-Options  "nosniff" always;
+    add_header X-Frame-Options         "SAMEORIGIN" always;
+    add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy      "geolocation=(), camera=(), microphone=()" always;
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
 }
-
-# ------------------------------------------------------------------ security headers
-add_header X-Content-Type-Options  "nosniff" always;
-add_header X-Frame-Options         "SAMEORIGIN" always;
-add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
-add_header Permissions-Policy      "geolocation=(), camera=(), microphone=()" always;
-add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'self'; base-uri 'self'" always;
 
 # ------------------------------------------------------------------ legacy redirects
 # Old Wix URLs → new pages. Keeps search rankings and inbound links alive.

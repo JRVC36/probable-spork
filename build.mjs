@@ -9,6 +9,7 @@ import path from "node:path";
 
 const SITE = {
   name: "Johns River Valley Camp",
+  url: "https://www.jrvc.org",
   phone: "828-387-5736",
   phoneHref: "tel:+18283875736",
   campPhone: "828-754-7067",
@@ -20,13 +21,19 @@ const SITE = {
 
 
 /* ---------------------------------------------------------------------------
-   Form endpoints.
+   Form endpoints & optional privacy-friendly analytics.
    Paste the Apps Script Web App URL (ends in /exec) after deploying
    deploy/apps-script/Code.gs. See deploy/GOOGLE-SHEET.md.
    Leave empty and the form falls back to emailing the camp instead of
    pretending to have received anything.
+
+   For cookie-free analytics (Plausible), set ANALYTICS_PLAUSIBLE_DOMAIN to
+   "jrvc.org" (and allow plausible.io in deploy/jrvc-site.inc script-src/connect-src).
+   Leave empty to emit zero third-party scripts (use GoAccess on nginx logs).
 --------------------------------------------------------------------------- */
 const ENDPOINT_REGISTRATION = "";
+const ANALYTICS_PLAUSIBLE_DOMAIN = "";
+const ANALYTICS_SCRIPT_SRC = "https://plausible.io/js/script.js";
 
 const ENDPOINTS = {
   __ENDPOINT_REGISTRATION__: ENDPOINT_REGISTRATION,
@@ -39,6 +46,84 @@ const NAV = [
   { href: "facilities.html", label: "Facilities" },
   { href: "get-involved.html", label: "Get Involved" },
   { href: "about.html", label: "About" },
+];
+
+/* Responsive image dimensions for automatic <picture> + WebP + JPEG srcset */
+const IMAGES = {
+  "hero":                   { sm: 1100, full: 2000, defaultSizes: "100vw" },
+  "chapel":                 { sm: 800,  full: 1500, defaultSizes: "(max-width: 900px) 100vw, 50vw" },
+  "lodge-timber":           { sm: 800,  full: 1600, defaultSizes: "(max-width: 900px) 100vw, 50vw" },
+  "lodge-aerial":           { sm: 800,  full: 1400, defaultSizes: "(max-width: 900px) 100vw, 50vw" },
+  "lodge-front":            { sm: 800,  full: 1400, defaultSizes: "100vw" },
+  "valley-road":            { sm: 800,  full: 1400, defaultSizes: "100vw" },
+  "aerial-overhead":        { sm: 800,  full: 1300, defaultSizes: "100vw" },
+  "rafting":                { sm: 600,  full: 900,  defaultSizes: "(max-width: 900px) 100vw, 50vw" },
+  "gallery-dining-hall":    { sm: 640,  full: 1200, defaultSizes: "(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw" },
+  "gallery-rafting":        { sm: 640,  full: 1200, defaultSizes: "(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw" },
+  "gallery-archery":        { sm: 640,  full: 1200, defaultSizes: "(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw" },
+  "gallery-swimming-hole":  { sm: 640,  full: 1200, defaultSizes: "(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw" },
+  "gallery-lodge-hammocks": { sm: 640,  full: 1200, defaultSizes: "(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw" },
+  "gallery-cabin-story":    { sm: 640,  full: 1200, defaultSizes: "(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw" },
+};
+
+/* 2026 Summer Camp sessions (single-sourced for structured data) */
+const SESSIONS_2026 = [
+  {
+    id: "juniors-crafts",
+    name: "Juniors: Arts & Crafts (Rising Grades 3–5)",
+    startDate: "2026-06-21",
+    endDate: "2026-06-27",
+    price: "485",
+    description: "Six-night residential camp session for rising 3rd–5th graders focused on making things by hand, archery, tubing the Johns River, hiking, and campfire.",
+  },
+  {
+    id: "juniors-cooking",
+    name: "Juniors: Cooking (Rising Grades 3–5)",
+    startDate: "2026-07-12",
+    endDate: "2026-07-18",
+    price: "485",
+    description: "Six-night residential camp session for rising 3rd–5th graders cooking alongside camp kitchen staff plus afternoon outdoor camp activities.",
+  },
+  {
+    id: "mh-paddle",
+    name: "Middle High: Paddle (Rising Grades 6–8)",
+    startDate: "2026-07-12",
+    endDate: "2026-07-18",
+    price: "545",
+    description: "Six-night residential camp session for rising 6th–8th graders built around paddling, river time, and an overnight under the stars.",
+  },
+  {
+    id: "mh-caving",
+    name: "Middle High: Caving (Rising Grades 6–8)",
+    startDate: "2026-07-19",
+    endDate: "2026-07-25",
+    price: "545",
+    description: "Six-night residential camp session for rising 6th–8th graders featuring guided off-site cave exploration and classic camp activities.",
+  },
+  {
+    id: "sh-adventure",
+    name: "Senior High: High Adventure (Rising Grades 9–12)",
+    startDate: "2026-06-21",
+    endDate: "2026-06-27",
+    price: "545",
+    description: "Six-night residential camp session for rising 9th–12th graders with off-site climbing and whitewater paddling trips.",
+  },
+  {
+    id: "sh-paddle",
+    name: "Senior High: Paddle (Rising Grades 9–12)",
+    startDate: "2026-06-28",
+    endDate: "2026-07-04",
+    price: "545",
+    description: "Six-night residential camp session for rising 9th–12th graders with river days, lake afternoons, and a July 4 campfire.",
+  },
+  {
+    id: "day-camp",
+    name: "JRVC Summer Day Camp (Rising Grades 1–6)",
+    startDate: "2026-06-22",
+    endDate: "2026-07-31",
+    price: "249",
+    description: "Six weekly Monday–Friday day camp sessions (8:30 a.m. to 4:30 p.m.) for rising 1st–6th graders, including lunch and all activities.",
+  },
 ];
 
 const PAGES = [
@@ -70,10 +155,152 @@ const assetVersion = (() => {
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+function structuredData(p) {
+  const orgId = `${SITE.url}/#organization`;
+  const placeAddress = {
+    "@type": "PostalAddress",
+    streetAddress: "6211 NC-90",
+    addressLocality: "Collettsville",
+    addressRegion: "NC",
+    postalCode: "28611",
+    addressCountry: "US",
+  };
+  const orgNode = {
+    "@type": ["Organization", "Campground", "LocalBusiness"],
+    "@id": orgId,
+    name: SITE.name,
+    alternateName: "JRVC",
+    foundingDate: SITE.est,
+    url: `${SITE.url}/`,
+    logo: `${SITE.url}/assets/img/favicon.svg`,
+    image: `${SITE.url}/${p.ogImage || "assets/img/hero.jpg"}`,
+    telephone: "+1-828-387-5736",
+    email: SITE.email,
+    priceRange: "$48–$545",
+    address: placeAddress,
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 35.9325,
+      longitude: -81.6689,
+    },
+    parentOrganization: {
+      "@type": "Organization",
+      name: "Southern Conference of the United Church of Christ",
+      url: "https://soc-ucc.org",
+    },
+  };
+
+  const graph = [orgNode];
+
+  if (p.slug === "summer-camp" || p.slug === "index") {
+    for (const s of SESSIONS_2026) {
+      graph.push({
+        "@type": "ChildrensEvent",
+        name: s.name,
+        description: s.description,
+        startDate: s.startDate,
+        endDate: s.endDate,
+        eventStatus: "https://schema.org/EventScheduled",
+        eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+        image: `${SITE.url}/assets/img/rafting.jpg`,
+        location: {
+          "@type": "Place",
+          name: SITE.name,
+          address: placeAddress,
+        },
+        organizer: { "@id": orgId },
+        offers: {
+          "@type": "Offer",
+          price: s.price,
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+          url: `${SITE.url}/register.html?session=${s.id}#form`,
+        },
+      });
+    }
+  }
+
+  if (p.slug === "faq") {
+    graph.push({
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What does resident camp cost, and what is included?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "$485 for Juniors (rising grades 3–5) and $545 for Middle High (6–8) and Senior High (9–12). Tuition covers six nights in a cabin, all meals, all activities, staffing, and any off-site trips within the session.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What are the day camp hours, grades, and tuition?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Day camp serves rising grades 1–6 and runs Monday through Friday, 8:30 a.m. to 4:30 p.m., for six weeks from June 22 to July 31, 2026. Tuition is $249 per week, including lunch.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What are the drop-off and pick-up times for resident camp?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Drop-off is Sunday from 3:00 to 4:30 p.m. at the lodge. Pick-up is Saturday from 9:00 to 10:00 a.m.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is financial aid (camperships) available?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes. The Campership Fund covers part or all of tuition depending on need for both residential and day camp. Requests are confidential.",
+          },
+        },
+      ],
+    });
+  }
+
+  const payload = {
+    "@context": "https://schema.org",
+    "@graph": graph,
+  };
+  return `\n<script type="application/ld+json">${JSON.stringify(payload)}</script>`;
+}
+
+/**
+ * Upgrades every <img ... src="assets/img/<key>.jpg" ...> into a responsive
+ * <picture> with WebP <source srcset> and JPEG <img srcset> + sizes.
+ */
+function enhanceImages(html) {
+  return html.replace(/<img\b([^>]*?\bsrc="assets\/img\/([a-z0-9-]+)\.jpg"[^>]*)>/g, (fullMatch, attrs, key) => {
+    const meta = IMAGES[key];
+    if (!meta) return fullMatch;
+
+    const isHero = /\bclass="[^"]*\bhero-img\b/.test(attrs);
+    const sizesMatch = attrs.match(/\bsizes="([^"]+)"/);
+    const sizes = sizesMatch ? sizesMatch[1] : (isHero ? "100vw" : meta.defaultSizes);
+
+    const jpgSrcset = `assets/img/${key}-sm.jpg ${meta.sm}w, assets/img/${key}.jpg ${meta.full}w`;
+    const webpSrcset = `assets/img/${key}-sm.webp ${meta.sm}w, assets/img/${key}.webp ${meta.full}w`;
+
+    let cleanAttrs = attrs
+      .replace(/\s*\bsrcset="[^"]*"/g, "")
+      .replace(/\s*\bsizes="[^"]*"/g, "");
+
+    const imgTag = `<img${cleanAttrs} srcset="${jpgSrcset}" sizes="${sizes}">`;
+    const sourceTag = `<source type="image/webp" srcset="${webpSrcset}" sizes="${sizes}">`;
+    return `<picture>${sourceTag}${imgTag}</picture>`;
+  });
+}
+
 function head(p) {
-  const canonical = `https://www.jrvc.org/${p.slug === "index" ? "" : `${p.slug}.html`}`;
-  const ogImage = `https://www.jrvc.org/${p.ogImage || "assets/img/hero.jpg"}`;
+  const canonical = `${SITE.url}/${p.slug === "index" ? "" : `${p.slug}.html`}`;
+  const ogImage = `${SITE.url}/${p.ogImage || "assets/img/hero.jpg"}`;
   const robots = p.noindex ? '\n<meta name="robots" content="noindex">' : "";
+  const analytics = ANALYTICS_PLAUSIBLE_DOMAIN
+    ? `\n<script defer data-domain="${esc(ANALYTICS_PLAUSIBLE_DOMAIN)}" src="${esc(ANALYTICS_SCRIPT_SRC)}"></script>`
+    : "";
+  const jsonLd = p.noindex ? "" : structuredData(p);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -92,7 +319,7 @@ function head(p) {
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/site.css?v=${assetVersion}">
+<link rel="stylesheet" href="assets/css/site.css?v=${assetVersion}">${analytics}${jsonLd}
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>`;
@@ -202,19 +429,20 @@ async function build() {
     for (const [token, value] of Object.entries(ENDPOINTS)) {
       body = body.split(token).join(value);
     }
+    body = enhanceImages(body);
     const html = head(p) + header(p.nav) + body + footer();
     writeFileSync(`${p.slug}.html`, html, "utf8");
     console.log(`  ${p.slug}.html`.padEnd(24), `${(html.length / 1024).toFixed(1)} KB`);
   }
 
   const urls = PAGES.filter((p) => !p.noindex).map((p) => {
-    const loc = `https://www.jrvc.org/${p.slug === "index" ? "" : `${p.slug}.html`}`;
+    const loc = `${SITE.url}/${p.slug === "index" ? "" : `${p.slug}.html`}`;
     return `  <url><loc>${loc}</loc></url>`;
   });
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
   writeFileSync("sitemap.xml", sitemap, "utf8");
 
-  const robots = `User-agent: *\nAllow: /\nSitemap: https://www.jrvc.org/sitemap.xml\n`;
+  const robots = `User-agent: *\nAllow: /\nSitemap: ${SITE.url}/sitemap.xml\n`;
   writeFileSync("robots.txt", robots, "utf8");
 
   if (!ENDPOINT_REGISTRATION) {
