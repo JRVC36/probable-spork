@@ -7,7 +7,7 @@ The model: **clone stays private, a clean export is served.**
 
 ```
 /opt/jrvc.org/repo     git clone — never served, needs node
-/var/www/jrvc.org      nginx root — pure static output, no node needed
+/usr/share/nginx/html  nginx docroot — pure static output, no node needed
 ```
 
 ---
@@ -48,8 +48,11 @@ node --version    # expect v20.x or newer
 
 ```bash
 # Web root (owned by nginx) and clone (owned by the deploy user)
-sudo mkdir -p /var/www/jrvc.org /opt/jrvc.org
-sudo chown -R www-data:www-data /var/www/jrvc.org
+# The docroot is /usr/share/nginx/html — the Debian/Ubuntu nginx default.
+# publish.sh keeps the DIRECTORY and replaces its contents, because this path
+# is package-managed. Do not delete it.
+sudo mkdir -p /usr/share/nginx/html /opt/jrvc.org
+sudo chown -R www-data:www-data /usr/share/nginx/html
 
 # Clone directory — owned by whoever runs publish.sh (you, or a deploy user).
 # Create the PARENT only; publish.sh clones into it and wants to create the
@@ -171,7 +174,7 @@ by hand, so local changes are discarded to guarantee it matches the remote.
 To pull and publish in one go:
 
 ```bash
-sudo REPO_DIR=/opt/jrvc.org/repo WEBROOT=/var/www/jrvc.org \
+sudo REPO_DIR=/opt/jrvc.org/repo WEBROOT=/usr/share/nginx/html \
      BRANCH=main /opt/jrvc.org/repo/deploy/publish.sh
 ```
 
@@ -187,12 +190,12 @@ sudo -u "$USER" git -C /opt/jrvc.org/repo pull --ff-only
 
 ```bash
 sudo REPO_DIR=/opt/jrvc.org/repo \
-     WEBROOT=/var/www/jrvc.org \
+     WEBROOT=/usr/share/nginx/html \
      BRANCH=main \
      /opt/jrvc.org/repo/deploy/publish.sh
 ```
 
-> Run it with `sudo` (it writes to `/var/www` and reloads nginx), but **as the
+> Run it with `sudo` (it writes to the docroot and reloads nginx), but **as the
 > owner of the clone** where possible. If the clone is owned by your user and
 > you run the script as root, git's ownership check can still trip — the script
 > scopes `safe.directory` to the clone to avoid that.
@@ -203,7 +206,7 @@ Watch for these lines:
 ==> Now at <sha> — <commit subject>
 ==> Built 12 pages.
 ==> Export contains 12 pages and 15 assets
-==> Published to /var/www/jrvc.org
+==> Published 12 pages to /usr/share/nginx/html
 ```
 
 If it stops at *"branch 'main' … does not contain the site"*, the work isn't
@@ -218,6 +221,28 @@ curl -sI http://localhost/assets/css/site.css | grep -i cache-control
 curl -s  http://localhost/faqs -o /dev/null -w '%{http_code} %{redirect_url}\n'   # expect 301
 curl -s  http://localhost/.git/config -o /dev/null -w '%{http_code}\n'            # expect 404
 ```
+
+---
+
+### Two publish modes
+
+`publish.sh` picks one automatically from the path:
+
+| Mode | Used for | Behaviour |
+|---|---|---|
+| `sync` | `/usr/share/nginx/html`, `/var/www/html`, `/srv/www/htdocs` | Keeps the directory, replaces its contents. Required for package-managed paths. |
+| `swap` | any other path | Replaces the directory atomically. |
+
+Force one with `SYNC_MODE=sync` or `SYNC_MODE=swap`. Use `sync` whenever nginx
+or the distro owns the directory.
+
+> **On this server the docroot is `/usr/share/nginx/html`**, so `sync` applies.
+> A backup is copied to `/usr/share/nginx/html.previous` — outside the docroot,
+> so it is never served. If that copy fails (no write access to the parent),
+> the script warns and continues rather than stopping.
+>
+> Publish needs write access to the docroot contents, so run it with `sudo` as
+> the owner of the clone.
 
 ---
 
@@ -249,10 +274,13 @@ sudo /opt/jrvc.org/repo/deploy/publish.sh
 ```
 
 It fetches, rebuilds, re-exports, and swaps the web root atomically. The
-previous release is kept at `/var/www/jrvc.org.previous` — roll back with:
+previous release is copied to `/usr/share/nginx/html.previous` (outside the
+docroot, so it is never served) — roll back with:
 
 ```bash
-sudo rm -rf /var/www/jrvc.org && sudo mv /var/www/jrvc.org.previous /var/www/jrvc.org
+sudo rm -rf /usr/share/nginx/html.broken
+sudo mv /usr/share/nginx/html /usr/share/nginx/html.broken
+sudo mv /usr/share/nginx/html.previous /usr/share/nginx/html
 ```
 
 ### Optional: deploy on push
@@ -314,7 +342,7 @@ GitHub webhook only if you need instant deploys.
 |---|---|
 | `branch 'main' does not contain the site` | Work not merged to `main`. Pass `BRANCH=`. |
 | `nginx -t` fails on `ssl_certificate` | You uncommented the 443 block before Certbot issued certs. |
-| Site loads but CSS unstyled | `root` points at the clone, not `/var/www/jrvc.org`; or `/assets/` denied. |
+| Site loads but CSS unstyled | `root` points at the clone, not `/usr/share/nginx/html`; or `/assets/` denied. |
 | Security headers missing on 404s | A `location` block with its own `add_header` drops inherited headers. Headers here use `always`; re-check any block you add. |
 | `cannot open '.git/FETCH_HEAD': Permission denied` | Clone created with `sudo`. Run `sudo chown -R "$USER":"$USER" /opt/jrvc.org/repo`. |
 | `destination path '/opt/jrvc.org/repo' already exists` | You pre-created the clone dir. Clone into it directly, or delete it and let `publish.sh` create it. |
