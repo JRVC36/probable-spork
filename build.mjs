@@ -42,18 +42,18 @@ const NAV = [
 ];
 
 const PAGES = [
-  { slug: "index", file: "home.html", nav: "", title: "Summer Camp & Retreat Center in the Blue Ridge Mountains", desc: "Johns River Valley Camp has welcomed campers to the Blue Ridge foothills since 1936. Summer camp, retreats, and mission trips in Collettsville, NC." },
-  { slug: "summer-camp", file: "summer-camp.html", nav: "summer-camp.html", title: "2026 Summer Camp — Sessions, Ages & Tuition", desc: "Six residential sessions for rising 3rd–12th graders plus day camp, June–July 2026. Ages, dates, tuition, and what's included." },
-  { slug: "retreats", file: "retreats.html", nav: "retreats.html", title: "Group Retreats & Meeting Space — Rates & Booking", desc: "Plan a retreat, staff training, family reunion, or wedding at JRVC. Lodging for 8–120, meals included, published rates, year-round availability." },
-  { slug: "mission-trips", file: "mission-trips.html", nav: "mission-trips.html", title: "Youth & College Mission Trips in Appalachia", desc: "All-inclusive mission trips for youth groups and college teams in the Southern Appalachian Mountains. Serving others, built around your group." },
-  { slug: "facilities", file: "facilities.html", nav: "facilities.html", title: "Lodging & Meeting Facilities", desc: "Modern accessible living units, cabins, primitive outpost, and meeting space across 150 acres beside the Johns River." },
-  { slug: "get-involved", file: "get-involved.html", nav: "get-involved.html", title: "Give, Volunteer & Work at Camp", desc: "Fund a campership, join a work weekend, or spend a summer on staff at Johns River Valley Camp." },
-  { slug: "about", file: "about.html", nav: "about.html", title: "About JRVC — Outdoor Ministry Since 1936", desc: "Johns River Valley Camp is the outdoor ministry site of the Southern Conference, United Church of Christ. Our mission, our place, and our people." },
-  { slug: "faq", file: "faq.html", nav: "", title: "Frequently Asked Questions", desc: "Tuition, drop-off times, packing lists, staff screening, allergies, financial aid, and everything else families ask before camp." },
-  { slug: "register", file: "register.html", nav: "", title: "Register for 2026 Summer Camp", desc: "Register for a 2026 JRVC summer session. Deposit, cancellation policy, and what happens next." },
-  { slug: "visit", file: "visit.html", nav: "", title: "Visit & Contact JRVC", desc: "Directions to 6211 NC-90, Collettsville NC. Phone, email, mailing address, and what to expect on the drive in." },
-  { slug: "404", file: "404.html", nav: "", title: "Page not found", desc: "That page has moved or never existed. Find summer camp, retreats, and contact details for Johns River Valley Camp." },
-  { slug: "privacy", file: "privacy.html", nav: "", title: "Privacy Policy", desc: "What information Johns River Valley Camp collects, why, and how to have it removed." },
+  { slug: "index", file: "home.html", nav: "", ogImage: "assets/img/hero.jpg", title: "Summer Camp & Retreat Center in the Blue Ridge Mountains", desc: "Johns River Valley Camp has welcomed campers to the Blue Ridge foothills since 1936. Summer camp, retreats, and mission trips in Collettsville, NC." },
+  { slug: "summer-camp", file: "summer-camp.html", nav: "summer-camp.html", ogImage: "assets/img/rafting.jpg", title: "2026 Summer Camp — Sessions, Ages & Tuition", desc: "Six residential sessions for rising 3rd–12th graders plus six weeks of day camp for rising 1st–6th graders, June–July 2026. Ages, dates, tuition, and what's included." },
+  { slug: "retreats", file: "retreats.html", nav: "retreats.html", ogImage: "assets/img/lodge-timber.jpg", title: "Group Retreats & Meeting Space — Rates & Booking", desc: "Plan a retreat, staff training, family reunion, or wedding at JRVC. Lodging for 8–120, meals included, published rates, year-round availability." },
+  { slug: "mission-trips", file: "mission-trips.html", nav: "mission-trips.html", ogImage: "assets/img/valley-road.jpg", title: "Youth & College Mission Trips in Appalachia", desc: "All-inclusive mission trips for youth groups and college teams in the Southern Appalachian Mountains. Serving others, built around your group." },
+  { slug: "facilities", file: "facilities.html", nav: "facilities.html", ogImage: "assets/img/aerial-overhead.jpg", title: "Lodging & Meeting Facilities", desc: "Modern accessible living units, cabins, primitive outpost, and meeting space across 150 acres beside the Johns River." },
+  { slug: "get-involved", file: "get-involved.html", nav: "get-involved.html", ogImage: "assets/img/valley-road.jpg", title: "Give, Volunteer & Work at Camp", desc: "Fund a campership, join a work weekend, or spend a summer on staff at Johns River Valley Camp." },
+  { slug: "about", file: "about.html", nav: "about.html", ogImage: "assets/img/chapel.jpg", title: "About JRVC — Outdoor Ministry Since 1936", desc: "Johns River Valley Camp is the outdoor ministry site of the Southern Conference, United Church of Christ. Our mission, our place, and our people." },
+  { slug: "faq", file: "faq.html", nav: "", ogImage: "assets/img/valley-road.jpg", title: "Frequently Asked Questions", desc: "Tuition, drop-off times, packing lists, staff screening, allergies, financial aid, and everything else families ask before camp." },
+  { slug: "register", file: "register.html", nav: "", ogImage: "assets/img/lodge-front.jpg", title: "Register for 2026 Summer Camp", desc: "Register for a 2026 JRVC summer session. Deposit, cancellation policy, and what happens next." },
+  { slug: "visit", file: "visit.html", nav: "", ogImage: "assets/img/hero.jpg", title: "Visit & Contact JRVC", desc: "Directions to 6211 NC-90, Collettsville NC. Phone, email, mailing address, and what to expect on the drive in." },
+  { slug: "404", file: "404.html", nav: "", ogImage: "assets/img/hero.jpg", noindex: true, title: "Page not found", desc: "That page has moved or never existed. Find summer camp, retreats, and contact details for Johns River Valley Camp." },
+  { slug: "privacy", file: "privacy.html", nav: "", ogImage: "assets/img/hero.jpg", title: "Privacy Policy", desc: "What information Johns River Valley Camp collects, why, and how to have it removed." },
 ];
 
 
@@ -71,20 +71,23 @@ const assetVersion = (() => {
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 function head(p) {
-  const canonical = `https://www.jrvc.org/${p.slug === "index" ? "" : p.slug}`;
+  const canonical = `https://www.jrvc.org/${p.slug === "index" ? "" : `${p.slug}.html`}`;
+  const ogImage = `https://www.jrvc.org/${p.ogImage || "assets/img/hero.jpg"}`;
+  const robots = p.noindex ? '\n<meta name="robots" content="noindex">' : "";
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(p.title)}${p.slug === "index" ? "" : " — JRVC"}</title>
-<meta name="description" content="${esc(p.desc)}">
+<meta name="description" content="${esc(p.desc)}">${robots}
 <link rel="canonical" href="${canonical}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${SITE.name}">
+<meta property="og:url" content="${canonical}">
 <meta property="og:title" content="${esc(p.title)}">
 <meta property="og:description" content="${esc(p.desc)}">
-<meta property="og:image" content="https://www.jrvc.org/assets/img/hero.jpg">
+<meta property="og:image" content="${ogImage}">
 <meta name="theme-color" content="#1f3a2e">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -180,7 +183,7 @@ function footer() {
     </div>
 
     <div class="foot-base">
-      <p>&copy; ${SITE.est}–2026 Johns River Valley Camp. A 501(c)(3) nonprofit.</p>
+      <p>&copy; ${SITE.est}–<span data-year>2026</span> Johns River Valley Camp. A 501(c)(3) nonprofit.</p>
       <ul class="foot-legal">
         <li><a href="privacy.html">Privacy Policy</a></li>
         <li><a href="faq.html">FAQ</a></li>
@@ -203,12 +206,23 @@ async function build() {
     writeFileSync(`${p.slug}.html`, html, "utf8");
     console.log(`  ${p.slug}.html`.padEnd(24), `${(html.length / 1024).toFixed(1)} KB`);
   }
+
+  const urls = PAGES.filter((p) => !p.noindex).map((p) => {
+    const loc = `https://www.jrvc.org/${p.slug === "index" ? "" : `${p.slug}.html`}`;
+    return `  <url><loc>${loc}</loc></url>`;
+  });
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
+  writeFileSync("sitemap.xml", sitemap, "utf8");
+
+  const robots = `User-agent: *\nAllow: /\nSitemap: https://www.jrvc.org/sitemap.xml\n`;
+  writeFileSync("robots.txt", robots, "utf8");
+
   if (!ENDPOINT_REGISTRATION) {
     console.log("\n\u26a0  ENDPOINT_REGISTRATION is empty — register.html will refuse to submit");
     console.log("   It shows a 'call the camp' message, never a false confirmation.");
     console.log("   Deploy deploy/apps-script/Code.gs and paste the /exec URL into build.mjs.");
   }
-  console.log(`\nBuilt ${PAGES.length} pages.`);
+  console.log(`\nBuilt ${PAGES.length} pages + sitemap.xml + robots.txt.`);
 }
 
 build();

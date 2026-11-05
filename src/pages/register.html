@@ -1,7 +1,7 @@
 <main id="main">
 
 <section class="page-head">
-  <img class="hero-img" src="assets/img/lodge-front.jpg" alt="The Shuford lodge at Johns River Valley Camp" width="1400" height="787">
+  <img class="hero-img" src="assets/img/lodge-front.jpg" alt="The Shuford lodge at Johns River Valley Camp" width="1400" height="787" fetchpriority="high" decoding="async">
   <div class="shell">
     <ol class="crumbs">
       <li><a href="index.html">Home</a></li>
@@ -43,16 +43,16 @@
             </div>
           </fieldset>
 
-          <div class="field">
-            <label for="dayweek">If day camp, which week?</label>
+          <div class="field" id="dayweekField">
+            <label for="dayweek">Which day camp week? <span class="req">*</span></label>
             <select id="dayweek" name="dayweek">
-              <option value="">Not registering for day camp</option>
-              <option>Session 1 &mdash; June 22&ndash;26</option>
-              <option>Session 2 &mdash; June 29&ndash;July 3</option>
-              <option>Session 3 &mdash; July 6&ndash;10</option>
-              <option>Session 4 &mdash; July 13&ndash;17</option>
-              <option>Session 5 &mdash; July 20&ndash;24</option>
-              <option>Session 6 &mdash; July 27&ndash;31</option>
+              <option value="">Select a day camp week</option>
+              <option value="Session 1 — June 22–26">Session 1 &mdash; June 22&ndash;26</option>
+              <option value="Session 2 — June 29–July 3">Session 2 &mdash; June 29&ndash;July 3</option>
+              <option value="Session 3 — July 6–10">Session 3 &mdash; July 6&ndash;10</option>
+              <option value="Session 4 — July 13–17">Session 4 &mdash; July 13&ndash;17</option>
+              <option value="Session 5 — July 20–24">Session 5 &mdash; July 20&ndash;24</option>
+              <option value="Session 6 — July 27–31">Session 6 &mdash; July 27&ndash;31</option>
             </select>
           </div>
 
@@ -133,9 +133,9 @@
             <input type="text" id="_gotcha" name="_gotcha" tabindex="-1" autocomplete="off">
           </div>
 
-          <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top:1.5rem">Continue to deposit &mdash; $100</button>
+          <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top:1.5rem">Submit registration</button>
 
-          <p class="note" style="margin-top:0.9rem">You will not be charged on this page. Payment is handled on the next step, and we follow up by email to confirm your camper&rsquo;s spot.</p>
+          <p class="note" style="margin-top:0.9rem">No payment is collected on this page. Within two business days we will email your confirmation and instructions for the $100 deposit that holds your camper&rsquo;s spot.</p>
 
           <p class="form-status" hidden tabindex="-1" role="status" aria-live="polite"></p>
         </form>
