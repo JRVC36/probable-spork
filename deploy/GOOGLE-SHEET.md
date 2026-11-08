@@ -1,178 +1,67 @@
-# Registrations → Google Sheet
+# Website Forms → 5 Separate Google Sheets + Email Setup
 
-The camper registration form posts to a **Google Apps Script Web App**, which
-appends one row per camper to a Google Sheet and optionally emails the director.
+All **5 separate Google Sheets** have already been created in your Google Drive with their formatted header rows (`#e8dfcd` sand header, bold labels, frozen top row):
 
-`deploy/apps-script/Code.gs` is the whole backend. There is no server to run and
-no API key to rotate — but read the security section before you deploy.
+1. **Camper Registrations (`register.html`)**
+   - **Sheet:** [JRVC Website — Camper Registrations 2026](https://docs.google.com/spreadsheets/d/17aeWZVJoGTIb7XWhFJFZVkwO1dfiHqcAQpVFpl5nAvI/edit)
+   - **ID:** `17aeWZVJoGTIb7XWhFJFZVkwO1dfiHqcAQpVFpl5nAvI`
+   - **Behavior:** Appends row → emails `kevin@jrvc.org` → automatically sends parent confirmation email with both health PDFs attached (`Camper-Health-History-Form.pdf` & `Camper-HealthCare-Recommendations.pdf`) → if parent checked the newsletter box, also adds their email to the Newsletter Signups sheet.
 
-```
-register.html  ──POST──▶  Apps Script Web App  ──▶  Google Sheet
-    (fetch, JSON)              (/exec)                 (one row per camper)
-                               ├──▶ director notification email (kevin@jrvc.org)
-                               └──▶ parent confirmation email + 2 health PDFs
-```
+2. **Retreat Inquiries (`retreats.html`)**
+   - **Sheet:** [JRVC Website — Retreat Inquiries](https://docs.google.com/spreadsheets/d/184KUGM_9Ri-oUM_tE_FX_zG4jyfOl2nkwCWufJNZo6Y/edit)
+   - **ID:** `184KUGM_9Ri-oUM_tE_FX_zG4jyfOl2nkwCWufJNZo6Y`
+   - **Behavior:** Appends row → emails `kevin@jrvc.org` with `Reply-To` set to the group leader's email.
 
----
+3. **Mission Trip Inquiries (`mission-trips.html`)**
+   - **Sheet:** [JRVC Website — Mission Trip Inquiries](https://docs.google.com/spreadsheets/d/1hH2vkYJA6TLFvsC6bw9uQoWV0-zAjrGdG_iEXRXuP8A/edit)
+   - **ID:** `1hH2vkYJA6TLFvsC6bw9uQoWV0-zAjrGdG_iEXRXuP8A`
+   - **Behavior:** Appends row → emails `kevin@jrvc.org` with `Reply-To` set to the organizer's email.
 
-## 1. Create the Sheet
+4. **Contact Messages (`visit.html`)**
+   - **Sheet:** [JRVC Website — Contact Messages](https://docs.google.com/spreadsheets/d/11xcJ3W0349-BV7-7XC0JhCR3rPnvYJGaBznx4FsqKyA/edit)
+   - **ID:** `11xcJ3W0349-BV7-7XC0JhCR3rPnvYJGaBznx4FsqKyA`
+   - **Behavior:** Appends row → emails `kevin@jrvc.org` with `Reply-To` set to the sender's email.
 
-1. Go to <https://sheets.new> and name it **JRVC Registrations 2026**.
-2. Leave it empty — the script creates the header row.
-
-**Set sharing now:** Share → *Restricted*. Add only the people who need it.
-This sheet will hold minors' names, dates of birth, home addresses and medical
-notes. It must never be "anyone with the link".
-
----
-
-## 2. Add the script
-
-1. In the Sheet: **Extensions → Apps Script**.
-2. Delete the sample `myFunction` stub.
-3. Paste the entire contents of `deploy/apps-script/Code.gs`.
-4. Change this line to a **long random string** (32+ characters):
-
-   ```js
-   const SECRET = 'CHANGE_ME_TO_A_LONG_RANDOM_STRING';
-   ```
-
-   Generate one: `openssl rand -hex 32`
-
-   > **This must be changed.** The script refuses every submission while the
-   > placeholder is present (`not_configured`), by design — a public endpoint
-   > must not accept data just because nobody set a password. You will see this
-   > in the execution log until you fix it.
-
-5. Set `NOTIFY_EMAIL` if you want an email per registration (or `''` to disable).
-6. **Save** (⌘/Ctrl+S).
-7. In the function dropdown pick **`setupSheet`**, then **Run**.
-   Authorise it when prompted (Google will warn "unverified app" — choose
-   *Advanced → Go to project*; it is your own script).
-   You should get a popup confirming 15 columns, and row 1 of the Sheet fills in.
+5. **Newsletter Signups (`get-involved.html`)**
+   - **Sheet:** [JRVC Website — Newsletter Signups](https://docs.google.com/spreadsheets/d/158yCHNPupvhBcvsPMPycVNCzhOFnCw_LcDXJOPmAN4w/edit)
+   - **ID:** `158yCHNPupvhBcvsPMPycVNCzhOFnCw_LcDXJOPmAN4w`
+   - **Behavior:** Appends row → emails `kevin@jrvc.org`.
 
 ---
 
-## 3. Deploy as a Web App
+## Quick 3-Minute Setup
 
-1. **Deploy → New deployment**.
-2. Gear icon → **Web app**.
+Because `deploy/apps-script/Code.gs` already has all **5 separate Spreadsheet IDs** and the shared `SECRET` (`jrvc_2026_0842e65cca05b7011542ac74b693378881f166b1a41c6364`) built in, you only need to deploy it once (or you can deploy it inside each of the 5 sheets separately if you prefer 5 separate `/exec` URLs).
+
+### 1. Paste `deploy/apps-script/Code.gs` into Apps Script
+
+1. Open [JRVC Website — Camper Registrations 2026](https://docs.google.com/spreadsheets/d/17aeWZVJoGTIb7XWhFJFZVkwO1dfiHqcAQpVFpl5nAvI/edit)
+2. Click **Extensions → Apps Script**
+3. Delete the placeholder `function myFunction() {}` and paste the entire contents of [`deploy/apps-script/Code.gs`](apps-script/Code.gs)
+4. Click the **Save** icon (`Ctrl+S` / `Cmd+S`)
+
+### 2. Authorize `setupSheet`
+
+1. In the toolbar dropdown at the top of Apps Script, select **`setupSheet`** and click **Run**
+2. Click **Review permissions** → choose your Google account → **Advanced** → **Go to Untitled project (unsafe)** → **Allow**
+   - This grants permission to write to your 5 Google Sheets, read the 2 health PDFs from Google Drive, and send confirmation emails.
+
+### 3. Deploy as a Web App
+
+1. Click **Deploy → New deployment** (top right)
+2. Click the gear icon next to *Select type* → choose **Web app**
 3. Set:
-   - **Description:** `registration v1`
-   - **Execute as:** `Me`
+   - **Description:** `JRVC Website Forms`
+   - **Execute as:** **Me**
    - **Who has access:** **Anyone**
+4. Click **Deploy** and copy the **Web app URL** (ends in `/exec`)
 
-   > "Anyone" is required — visitors are not signed into Google. The secret
-   > token plus the honeypot are the access control. See security below.
-4. **Deploy**, then copy the **Web app URL**. It ends in `/exec`.
+### 4. Give us the `/exec` URL (or paste it into `build.mjs`)
 
-**Test it before touching the website.** Paste the `/exec` URL into a browser.
-You should see:
-
-```json
-{"ok":true,"service":"jrvc-registration","sheet":"Registrations"}
-```
-
-If you see a login page instead, "Who has access" is not set to *Anyone*.
-If you see an error, re-read section 2 — most likely `setupSheet` has not run.
-
----
-
-## 4. Point the site at it
-
-Edit `build.mjs` and paste the URL:
+Either paste the `/exec` URL right here in chat and we will wire it in, build, commit, and merge for you, or set it in `build.mjs`:
 
 ```js
-const ENDPOINT_REGISTRATION = "https://script.google.com/macros/s/AKfy…/exec";
+const ENDPOINT_DEFAULT = "https://script.google.com/macros/s/AKfycb.../exec";
 ```
 
-Edit `src/pages/register.html` and set the same secret you used in the script:
-
-```html
-data-secret="the-same-long-random-string"
-```
-
-Rebuild and redeploy:
-
-```bash
-node build.mjs
-./deploy/publish.sh
-```
-
-The build prints a warning if `ENDPOINT_REGISTRATION` is still empty.
-
----
-
-## 5. Verify end to end
-
-On the live site, submit a **real test registration** with your own details:
-
-- ✅ A row appears in the Sheet with a timestamp
-- ✅ The page shows "Thanks — your camper is registered."
-- ✅ Turning off JavaScript and submitting still works — the native form POST
-      lands on an Apps Script confirmation page instead
-
-Then test the **failure** path, because a form that fails silently is worse
-than one that is visibly down: temporarily set a wrong `data-secret`, submit,
-and confirm you get *"That didn't go through… please call the camp"* and **no
-row is added**. Restore the secret afterwards.
-
----
-
-## Security, honestly
-
-What this setup does and does not protect:
-
-| Concern | Status |
-|---|---|
-| Public `/exec` URL discovered by a spammer | Honeypot + secret token reduce it; not bulletproof. Watch the Sheet for junk. |
-| Secret visible in page source | **Yes.** It stops naive drive-by posting and unknown bots, not a determined person reading the HTML. Treat it as a speed bump, not authentication. |
-| Someone submits junk to your Sheet | Possible. Append `Status` = New so you can delete bad rows. Consider adding a `RECAPTCHA` later if it becomes a problem. |
-| Data at rest | Google Drive. Privacy policy already covers "service providers… under agreements limiting their use". Keep sharing Restricted. |
-| Retention | Delete rows after your retention window (the privacy policy says 7 years for registration records). Set a calendar reminder. |
-| Rotating the secret | Edit `SECRET` in the script → **Deploy → Manage deployments → Edit → Version: New version → Deploy**. URL stays the same. Then update `data-secret` and redeploy the site. |
-
-**If the secret is ever exposed**, rotate it. It costs 2 minutes.
-
----
-
-## Automatic Parent Confirmation Email & Attachments
-
-When `SEND_PARENT_CONFIRMATION` is `true` in `deploy/apps-script/Code.gs`, every
-successful registration automatically sends a confirmation email to the parent
-(`data.email`, with `Reply-To` set to `NOTIFY_EMAIL`) and attaches the two PDF
-health documents from Google Drive:
-
-- **`Camper-Health-History-Form.pdf`** — Drive ID `112O9axC9-jKRgLTImXHxrLoa5OJpYt53`
-- **`Camper-HealthCare-Recommendations.pdf`** — Drive ID `1vD7_JdbExAdxKhABoppvSJ6GQBJvP9n2`
-
-Running `setupSheet()` in the Apps Script editor authorizes Drive access and
-verifies that both PDFs can be fetched before you deploy.
-
----
-
-## What this does *not* do
-
-- **No online card payment.** The form records the registration and explains
-  that camp staff will follow up with instructions for the $100 deposit.
-- **No capacity limits.** Overbooking a session is possible. A `COUNTIF` guard
-  per session is a reasonable next step.
-- **No editing.** Rows are append-only; corrections happen in the Sheet.
-
----
-
-## Other forms
-
-The other five forms (retreat inquiry, mission inquiry, contact, donation,
-newsletter) still carry `data-demo`. They now show **"Demo form. Nothing was
-sent"** rather than a false confirmation, so they fail honestly.
-
-To connect them the same way:
-
-1. Add another `const ENDPOINT_X = ""` in `build.mjs` and a token in `src/pages/*.html`.
-2. Duplicate `Code.gs` with a different `SHEET_NAME` and its own `SECRET`.
-3. Set `action="__ENDPOINT_X__"`, `data-endpoint="__ENDPOINT_X__"`,
-   `data-secret="…"`, and **remove `data-demo`**.
-
-The submit handler in `assets/js/site.js` already handles all of it — it posts
-any form that has `data-endpoint`, and refuses to claim success otherwise.
+*(If you ever want 5 separate Web App deployments in addition to the 5 separate Google Sheets, you can paste `deploy/apps-script/Code.gs` into each of the 5 sheets and set `ENDPOINT_REGISTRATION`, `ENDPOINT_RETREATS`, `ENDPOINT_MISSIONS`, `ENDPOINT_CONTACT`, and `ENDPOINT_NEWSLETTER` individually in `build.mjs`.)*

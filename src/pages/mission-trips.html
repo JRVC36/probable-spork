@@ -162,7 +162,17 @@
       </div>
 
       <div class="form-card">
-        <form data-demo novalidate>
+        <form method="post"
+              action="__ENDPOINT_MISSIONS__"
+              data-endpoint="__ENDPOINT_MISSIONS__"
+              data-form="mission"
+              data-secret="__FORM_SECRET__"
+              data-success="Request sent."
+              data-success-detail="Kevin will reply within one business day with dates, a sample schedule, and a quote."
+              data-fail="We could not save your request. Please call 828-387-5736 or email kevin@jrvc.org."
+              novalidate>
+          <input type="hidden" name="_form" value="mission">
+          <input type="hidden" name="_secret" value="__FORM_SECRET__">
           <div class="field">
             <label for="morg">Church, school, or organization <span class="req">*</span></label>
             <input type="text" id="morg" name="org" required autocomplete="organization">
@@ -207,8 +217,12 @@
             <label for="mnotes">Anything else?</label>
             <textarea id="mnotes" name="notes" rows="3" placeholder="Grade or age range, accessibility needs, program preferences..."></textarea>
           </div>
+          <div aria-hidden="true" class="hp-field">
+            <label for="mission_gotcha">Leave this field blank</label>
+            <input type="text" id="mission_gotcha" name="_gotcha" tabindex="-1" autocomplete="off">
+          </div>
           <button type="submit" class="btn btn-primary btn-block">Request dates &amp; a quote</button>
-          <p class="form-status" hidden tabindex="-1" role="status">
+          <p class="form-status" hidden tabindex="-1" role="status" aria-live="polite">
             <strong>Sent.</strong> Kevin will reply within one business day with dates, a sample schedule, and a quote.
           </p>
         </form>
