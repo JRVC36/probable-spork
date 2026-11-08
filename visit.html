@@ -16,7 +16,7 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/site.css?v=fec7a217">
+<link rel="stylesheet" href="assets/css/site.css?v=b37aa580">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":["Organization","Campground","LocalBusiness"],"@id":"https://www.jrvc.org/#organization","name":"Johns River Valley Camp","alternateName":"JRVC","foundingDate":"1936","url":"https://www.jrvc.org/","logo":"https://www.jrvc.org/assets/img/favicon.svg","image":"https://www.jrvc.org/assets/img/hero.jpg","telephone":"+1-828-387-5736","email":"kevin@jrvc.org","priceRange":"$48–$545","address":{"@type":"PostalAddress","streetAddress":"6211 NC-90","addressLocality":"Collettsville","addressRegion":"NC","postalCode":"28611","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":35.9325,"longitude":-81.6689},"parentOrganization":{"@type":"Organization","name":"Southern Conference of the United Church of Christ","url":"https://soc-ucc.org"}}]}</script>
 </head>
 <body>
@@ -162,7 +162,17 @@
       </div>
 
       <div class="form-card">
-        <form data-demo novalidate>
+        <form method="post"
+              action=""
+              data-endpoint=""
+              data-form="contact"
+              data-secret="jrvc_2026_0842e65cca05b7011542ac74b693378881f166b1a41c6364"
+              data-success="Message sent."
+              data-success-detail="We will get back to you within one business day."
+              data-fail="We could not send your message. Please call 828-387-5736 or email kevin@jrvc.org."
+              novalidate>
+          <input type="hidden" name="_form" value="contact">
+          <input type="hidden" name="_secret" value="jrvc_2026_0842e65cca05b7011542ac74b693378881f166b1a41c6364">
           <div class="field-row">
             <div class="field">
               <label for="vname">Your name <span class="req">*</span></label>
@@ -192,8 +202,12 @@
             <label for="vmsg">Message <span class="req">*</span></label>
             <textarea id="vmsg" name="message" rows="5" required></textarea>
           </div>
+          <div aria-hidden="true" class="hp-field">
+            <label for="visit_gotcha">Leave this field blank</label>
+            <input type="text" id="visit_gotcha" name="_gotcha" tabindex="-1" autocomplete="off">
+          </div>
           <button type="submit" class="btn btn-primary btn-block">Send message</button>
-          <p class="form-status" hidden tabindex="-1" role="status">
+          <p class="form-status" hidden tabindex="-1" role="status" aria-live="polite">
             <strong>Message sent.</strong> We will get back to you within one business day.
           </p>
         </form>
@@ -263,6 +277,6 @@
     </div>
   </div>
 </footer>
-<script src="assets/js/site.js?v=fec7a217" defer></script>
+<script src="assets/js/site.js?v=b37aa580" defer></script>
 </body>
 </html>

@@ -26,10 +26,14 @@
               method="post"
               action="__ENDPOINT_REGISTRATION__"
               data-endpoint="__ENDPOINT_REGISTRATION__"
-              data-secret="CHANGE_ME_TO_A_LONG_RANDOM_STRING"
+              data-form="registration"
+              data-secret="__FORM_SECRET__"
               data-success="Thanks &mdash; your camper is registered."
+              data-success-detail="We just sent a confirmation email with the Camper Health History Form and HealthCare Recommendations attached. If you need us sooner, call 828-387-5736."
               data-fail="We could not save that. Please call the camp at 828-387-5736 so we can take it by phone."
               >
+          <input type="hidden" name="_form" value="registration">
+          <input type="hidden" name="_secret" value="__FORM_SECRET__">
           <fieldset class="form-fieldset">
             <legend class="fieldset-legend fieldset-legend--spaced">Which session?</legend>
             <div class="radio-group">

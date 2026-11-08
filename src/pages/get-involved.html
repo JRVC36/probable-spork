@@ -248,11 +248,26 @@
       <p class="eyebrow eyebrow--center">Stay in touch</p>
       <h2>Two emails a season. That is the promise.</h2>
       <p class="lede mx-auto lede--spaced">Registration dates, retreat announcements, and work weekend schedules. Nothing else.</p>
-      <form data-demo novalidate class="newsletter-form">
+      <form method="post"
+            action="__ENDPOINT_NEWSLETTER__"
+            data-endpoint="__ENDPOINT_NEWSLETTER__"
+            data-form="newsletter"
+            data-secret="__FORM_SECRET__"
+            data-success="You&rsquo;re on the list."
+            data-success-detail="Thank you for subscribing to JRVC seasonal updates."
+            data-fail="We could not save your email. Please email kevin@jrvc.org to be added."
+            novalidate
+            class="newsletter-form">
+        <input type="hidden" name="_form" value="newsletter">
+        <input type="hidden" name="_secret" value="__FORM_SECRET__">
+        <div aria-hidden="true" class="hp-field">
+          <label for="nl_gotcha">Leave this field blank</label>
+          <input type="text" id="nl_gotcha" name="_gotcha" tabindex="-1" autocomplete="off">
+        </div>
         <label for="nl-email" class="sr-only">Email address</label>
         <input type="email" id="nl-email" name="email" placeholder="you@example.com" required autocomplete="email" class="newsletter-input">
         <button type="submit" class="btn btn-forest">Subscribe</button>
-        <p class="form-status newsletter-status" hidden tabindex="-1" role="status">You&rsquo;re on the list. Thank you.</p>
+        <p class="form-status newsletter-status" hidden tabindex="-1" role="status" aria-live="polite">You&rsquo;re on the list. Thank you.</p>
       </form>
     </div>
   </div>

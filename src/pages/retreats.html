@@ -164,7 +164,17 @@
       </div>
 
       <div class="form-card">
-        <form data-demo novalidate>
+        <form method="post"
+              action="__ENDPOINT_RETREATS__"
+              data-endpoint="__ENDPOINT_RETREATS__"
+              data-form="retreat"
+              data-secret="__FORM_SECRET__"
+              data-success="Inquiry received."
+              data-success-detail="We will reply within one business day with rates and availability for your dates."
+              data-fail="We could not save your inquiry. Please call 828-387-5736 or email kevin@jrvc.org."
+              novalidate>
+          <input type="hidden" name="_form" value="retreat">
+          <input type="hidden" name="_secret" value="__FORM_SECRET__">
           <div class="field">
             <label for="gname">Group or organization <span class="req">*</span></label>
             <input type="text" id="gname" name="group" required autocomplete="organization">
@@ -214,8 +224,12 @@
             <label for="rnotes">Anything else we should know?</label>
             <textarea id="rnotes" name="notes" rows="3" placeholder="Meals needed, accessibility requirements, program space, etc."></textarea>
           </div>
+          <div aria-hidden="true" class="hp-field">
+            <label for="retreat_gotcha">Leave this field blank</label>
+            <input type="text" id="retreat_gotcha" name="_gotcha" tabindex="-1" autocomplete="off">
+          </div>
           <button type="submit" class="btn btn-primary btn-block">Request availability</button>
-          <p class="form-status" hidden tabindex="-1" role="status">
+          <p class="form-status" hidden tabindex="-1" role="status" aria-live="polite">
             <strong>Inquiry received.</strong> We will reply within one business day with rates and availability for your dates.
           </p>
         </form>

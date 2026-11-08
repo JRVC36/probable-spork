@@ -1,43 +1,36 @@
 /**
- * JRVC — camper registration → Google Sheet + automatic parent confirmation email
+ * JRVC — Website Forms → 5 Separate Google Sheets + Email Notifications
  * ---------------------------------------------------------------------------
- * Receives the POST from register.html, appends one row per camper, notifies
- * the camp director, and replies to the parent with the two health PDFs attached.
+ * Routes each of the 5 website forms to its own dedicated Google Sheet in
+ * Google Drive, emails kevin@jrvc.org on each submission, and automatically
+ * replies to summer-camp parents with the two health PDFs attached.
  *
- * SETUP (see deploy/GOOGLE-SHEET.md for the full walkthrough):
- *   1. Create the Google Sheet, then Extensions → Apps Script.
- *   2. Paste this file in, replacing the default contents.
- *   3. Change SECRET below to a long random string.
- *   4. Run setupSheet() once and authorise it (grants Sheet, Mail, and Drive access).
- *   5. Optional: run testAttachments() to verify both Drive PDFs can be read.
- *   6. Deploy → New deployment → Web app
- *        Execute as: Me
- *        Who has access: Anyone
- *   7. Copy the /exec URL into ENDPOINT_REGISTRATION in build.mjs.
+ * THE 5 SEPARATE GOOGLE SHEETS (already created in your Google Drive):
+ *   1. Camper Registrations 2026 : 17aeWZVJoGTIb7XWhFJFZVkwO1dfiHqcAQpVFpl5nAvI
+ *   2. Retreat Inquiries         : 184KUGM_9Ri-oUM_tE_FX_zG4jyfOl2nkwCWufJNZo6Y
+ *   3. Mission Trip Inquiries    : 1hH2vkYJA6TLFvsC6bw9uQoWV0-zAjrGdG_iEXRXuP8A
+ *   4. Contact Messages          : 11xcJ3W0349-BV7-7XC0JhCR3rPnvYJGaBznx4FsqKyA
+ *   5. Newsletter Signups        : 158yCHNPupvhBcvsPMPycVNCzhOFnCw_LcDXJOPmAN4w
  *
- * SECURITY NOTES
- *   - A Web App deployed as "Anyone" is a public URL. SECRET + the honeypot
- *     below are the only things between it and a spammer. Rotate SECRET by
- *     editing this file and re-deploying (the URL stays the same).
- *   - This handles minors' names, dates of birth, addresses and medical
- *     notes. Keep the Sheet private (share with named accounts only), and
- *     delete rows once the season's retention window has passed.
+ * You can either:
+ *   • Deploy THIS file once (it writes each form into its own separate Google
+ *     Sheet above via SpreadsheetApp.openById), OR
+ *   • Deploy 5 separate Web Apps (one inside each of the 5 Google Sheets) and
+ *     paste their 5 /exec URLs into ENDPOINT_REGISTRATION, ENDPOINT_RETREATS,
+ *     ENDPOINT_MISSIONS, ENDPOINT_CONTACT, and ENDPOINT_NEWSLETTER in build.mjs.
  */
 
 // ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
 
-/** Must match data-secret on the <form> in src/pages/register.html. */
-const SECRET = 'CHANGE_ME_TO_A_LONG_RANDOM_STRING';
+/** Pre-generated shared secret matching FORM_SECRET in build.mjs. */
+const SECRET = 'jrvc_2026_0842e65cca05b7011542ac74b693378881f166b1a41c6364';
 
-/** Tab that receives the rows. Created by setupSheet() if missing. */
-const SHEET_NAME = 'Registrations';
-
-/** Optional: get an email for each registration. '' to disable. */
+/** Optional: get an email notification for each submission. '' to disable. */
 const NOTIFY_EMAIL = 'kevin@jrvc.org';
 
-/** Send an automatic confirmation email + attachments to the parent/guardian. */
+/** Send an automatic confirmation email + PDF attachments to camper parents. */
 const SEND_PARENT_CONFIRMATION = true;
 
 /** Google Drive PDFs attached to every parent confirmation email. */
@@ -63,24 +56,116 @@ const SESSION_LABELS = {
   'day-camp':        'Day Camp ($249/week)',
 };
 
-/** Column order. Keys must match the `name` attributes in the HTML form. */
-const COLUMNS = [
-  { key: '_timestamp',     label: 'Received' },
-  { key: 'session',        label: 'Session' },
-  { key: 'dayweek',        label: 'Day camp week' },
-  { key: 'camper_first',   label: 'Camper first' },
-  { key: 'camper_last',    label: 'Camper last' },
-  { key: 'grade',          label: 'Rising grade' },
-  { key: 'dob',            label: 'DOB' },
-  { key: 'parent_name',    label: 'Parent / guardian' },
-  { key: 'email',          label: 'Email' },
-  { key: 'phone',          label: 'Phone' },
-  { key: 'address',        label: 'Address' },
-  { key: 'medical',        label: 'Allergies / medical / dietary' },
-  { key: 'newsletter',     label: 'Mailing list' },
-  { key: 'agreement',      label: 'Agreed to policies' },
-  { key: '_status',        label: 'Status' },
-];
+/**
+ * Each website form maps to its own separate Google Sheet in Google Drive.
+ */
+const FORMS = {
+  registration: {
+    spreadsheetId: '17aeWZVJoGTIb7XWhFJFZVkwO1dfiHqcAQpVFpl5nAvI',
+    sheetName: 'Registrations',
+    required: ['camper_first', 'camper_last', 'parent_name', 'email', 'session'],
+    defaultStatus: 'New — deposit pending',
+    subject: function (data) {
+      return 'Camp registration — ' + (data.camper_first || '') + ' ' + (data.camper_last || '') + ' (' + (data.session || '') + ')';
+    },
+    columns: [
+      { key: '_timestamp',   label: 'Received' },
+      { key: 'session',      label: 'Session' },
+      { key: 'dayweek',      label: 'Day camp week' },
+      { key: 'camper_first', label: 'Camper first' },
+      { key: 'camper_last',  label: 'Camper last' },
+      { key: 'grade',        label: 'Rising grade' },
+      { key: 'dob',          label: 'DOB' },
+      { key: 'parent_name',  label: 'Parent / guardian' },
+      { key: 'email',        label: 'Email' },
+      { key: 'phone',        label: 'Phone' },
+      { key: 'address',      label: 'Address' },
+      { key: 'medical',      label: 'Allergies / medical / dietary' },
+      { key: 'newsletter',   label: 'Mailing list' },
+      { key: 'agreement',    label: 'Agreed to policies' },
+      { key: '_status',      label: 'Status' },
+    ],
+  },
+
+  retreat: {
+    spreadsheetId: '184KUGM_9Ri-oUM_tE_FX_zG4jyfOl2nkwCWufJNZo6Y',
+    sheetName: 'Retreat Inquiries',
+    required: ['group', 'name', 'email'],
+    defaultStatus: 'New — quote pending',
+    subject: function (data) {
+      return 'Retreat inquiry — ' + (data.group || data.name || 'Group');
+    },
+    columns: [
+      { key: '_timestamp', label: 'Received' },
+      { key: 'group',      label: 'Group / organization' },
+      { key: 'name',       label: 'Contact name' },
+      { key: 'size',       label: 'Group size' },
+      { key: 'email',      label: 'Email' },
+      { key: 'phone',      label: 'Phone' },
+      { key: 'arrival',    label: 'Preferred arrival' },
+      { key: 'departure',  label: 'Departure' },
+      { key: 'type',       label: 'Gathering type' },
+      { key: 'notes',      label: 'Notes' },
+      { key: '_status',    label: 'Status' },
+    ],
+  },
+
+  mission: {
+    spreadsheetId: '1hH2vkYJA6TLFvsC6bw9uQoWV0-zAjrGdG_iEXRXuP8A',
+    sheetName: 'Mission Trip Inquiries',
+    required: ['org', 'name', 'email'],
+    defaultStatus: 'New — quote pending',
+    subject: function (data) {
+      return 'Mission trip inquiry — ' + (data.org || data.name || 'Group');
+    },
+    columns: [
+      { key: '_timestamp', label: 'Received' },
+      { key: 'org',        label: 'Church / school / organization' },
+      { key: 'name',       label: 'Contact name' },
+      { key: 'email',      label: 'Email' },
+      { key: 'size',       label: 'Group size' },
+      { key: 'month',      label: 'Preferred month' },
+      { key: 'theme',      label: 'Theme' },
+      { key: 'notes',      label: 'Notes' },
+      { key: '_status',    label: 'Status' },
+    ],
+  },
+
+  contact: {
+    spreadsheetId: '11xcJ3W0349-BV7-7XC0JhCR3rPnvYJGaBznx4FsqKyA',
+    sheetName: 'Contact Messages',
+    required: ['name', 'email', 'message'],
+    defaultStatus: 'New',
+    subject: function (data) {
+      return 'Website message — ' + (data.topic || 'General') + ' (' + (data.name || '') + ')';
+    },
+    columns: [
+      { key: '_timestamp', label: 'Received' },
+      { key: 'name',       label: 'Name' },
+      { key: 'email',      label: 'Email' },
+      { key: 'phone',      label: 'Phone' },
+      { key: 'topic',      label: 'Topic' },
+      { key: 'message',    label: 'Message' },
+      { key: '_status',    label: 'Status' },
+    ],
+  },
+
+  newsletter: {
+    spreadsheetId: '158yCHNPupvhBcvsPMPycVNCzhOFnCw_LcDXJOPmAN4w',
+    sheetName: 'Newsletter Signups',
+    required: ['email'],
+    defaultStatus: 'Subscribed',
+    subject: function (data) {
+      return 'Newsletter signup — ' + (data.email || '');
+    },
+    columns: [
+      { key: '_timestamp', label: 'Received' },
+      { key: 'email',      label: 'Email' },
+      { key: '_page',      label: 'Page' },
+      { key: '_status',    label: 'Status' },
+    ],
+  },
+};
 
 // ---------------------------------------------------------------------------
 // Handlers
@@ -92,14 +177,10 @@ function doPost(e) {
     var data = parseRequest_(e);
     if (!data) return respond_(false, 'bad_request', {}, wantsHtml);
 
-    // Non-JS fallback posts a normal form, which we answer with a web page.
     wantsHtml = String(data._ajax || '') !== '1';
 
-    // Fail CLOSED. A public web app must not accept submissions just because
-    // someone forgot to change the placeholder secret — that would leave an
-    // open endpoint quietly collecting children's data.
     if (!SECRET || SECRET === 'CHANGE_ME_TO_A_LONG_RANDOM_STRING') {
-      console.error('SECRET is still the default placeholder — refusing submission. Edit SECRET and re-deploy.');
+      console.error('SECRET is not configured.');
       return respond_(false, 'not_configured', {}, wantsHtml);
     }
     if (data._secret !== SECRET) {
@@ -111,42 +192,61 @@ function doPost(e) {
       return respond_(true, 'ignored', {}, wantsHtml);
     }
 
-    var required = ['camper_first', 'camper_last', 'parent_name', 'email', 'session'];
-    var missing = required.filter(function (k) {
+    var formKey = detectFormKey_(data);
+    var cfg = FORMS[formKey];
+    if (!cfg) {
+      return respond_(false, 'unknown_form', { form: formKey }, wantsHtml);
+    }
+
+    var missing = cfg.required.filter(function (k) {
       return !String(data[k] || '').trim();
     });
     if (missing.length) {
       return respond_(false, 'missing_fields', { fields: missing }, wantsHtml);
     }
 
-    var row = COLUMNS.map(function (c) {
-      if (c.key === '_timestamp') return new Date();
-      if (c.key === '_status') return 'New — deposit pending';
+    var now = new Date();
+    var row = cfg.columns.map(function (c) {
+      if (c.key === '_timestamp') return now;
+      if (c.key === '_status') return cfg.defaultStatus;
       return data[c.key] === undefined ? '' : String(data[c.key]);
     });
 
-    var sheet = getSheet_();
+    var sheet = getTargetSheet_(cfg);
     sheet.appendRow(row);
+
+    // If a parent checked "Send me camp news" on the registration form,
+    // also add their email to the separate Newsletter Signups Google Sheet.
+    if (formKey === 'registration' && isChecked_(data.newsletter) && data.email) {
+      try {
+        var nlSheet = getTargetSheet_(FORMS.newsletter);
+        nlSheet.appendRow([now, String(data.email).trim(), 'register.html (opt-in)', 'Subscribed']);
+      } catch (nlErr) {
+        console.error('newsletter opt-in copy failed: ' + nlErr);
+      }
+    }
 
     // 1. Notify the camp director
     if (NOTIFY_EMAIL) {
       try {
-        MailApp.sendEmail({
+        var mailOpts = {
           to: NOTIFY_EMAIL,
-          replyTo: String(data.email).trim(),
-          subject: 'Camp registration — ' + row[3] + ' ' + row[4] + ' (' + row[1] + ')',
-          body: COLUMNS.map(function (c, i) {
-            return c.label + ': ' + (c.key === '_timestamp' ? new Date() : row[i]);
+          subject: cfg.subject(data),
+          body: cfg.columns.map(function (c, i) {
+            return c.label + ': ' + (c.key === '_timestamp' ? now : row[i]);
           }).join('\n'),
-        });
+        };
+        if (data.email) {
+          mailOpts.replyTo = String(data.email).trim();
+        }
+        MailApp.sendEmail(mailOpts);
       } catch (mailErr) {
-        // Never fail the submission because a notification bounced.
         console.error('notify failed: ' + mailErr);
       }
     }
 
-    // 2. Send automatic confirmation email + health PDFs to parent/guardian
-    if (SEND_PARENT_CONFIRMATION && data.email) {
+    // 2. Send automatic confirmation email + health PDFs to camper parent/guardian
+    if (formKey === 'registration' && SEND_PARENT_CONFIRMATION && data.email) {
       try {
         sendParentConfirmation_(data);
       } catch (replyErr) {
@@ -154,7 +254,7 @@ function doPost(e) {
       }
     }
 
-    return respond_(true, 'ok', {}, wantsHtml);
+    return respond_(true, 'ok', { form: formKey }, wantsHtml);
   } catch (err) {
     console.error(err);
     return respond_(false, 'server_error', {}, wantsHtml);
@@ -163,12 +263,52 @@ function doPost(e) {
 
 /** Health check: visit the /exec URL in a browser and you should see {"ok":true}. */
 function doGet() {
-  return json_({ ok: true, service: 'jrvc-registration', sheet: SHEET_NAME });
+  return json_({
+    ok: true,
+    service: 'jrvc-forms',
+    sheets: Object.keys(FORMS).map(function (k) {
+      return { form: k, spreadsheetId: FORMS[k].spreadsheetId, sheet: FORMS[k].sheetName };
+    }),
+  });
 }
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+function detectFormKey_(data) {
+  var explicit = String(data._form || '').trim().toLowerCase();
+  if (explicit && FORMS[explicit]) return explicit;
+  if (data.camper_first || data.session) return 'registration';
+  if (data.group || data.arrival || data.departure) return 'retreat';
+  if (data.org || data.theme || data.month) return 'mission';
+  if (data.message || data.topic) return 'contact';
+  if (data.email && !data.name) return 'newsletter';
+  return 'registration';
+}
+
+function isChecked_(val) {
+  var s = String(val || '').trim().toLowerCase();
+  return s === 'on' || s === 'true' || s === 'yes' || s === '1';
+}
+
+function getTargetSheet_(cfg) {
+  var ss = cfg.spreadsheetId
+    ? SpreadsheetApp.openById(cfg.spreadsheetId)
+    : SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(cfg.sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(cfg.sheetName);
+    var headers = cfg.columns.map(function (c) { return c.label; });
+    sheet.getRange(1, 1, 1, headers.length)
+      .setValues([headers])
+      .setFontWeight('bold')
+      .setBackground('#e8dfcd');
+    sheet.setFrozenRows(1);
+    sheet.autoResizeColumns(1, headers.length);
+  }
+  return sheet;
+}
 
 /**
  * Sends a confirmation email to the parent/guardian with the PDF attachments
@@ -258,10 +398,10 @@ function parseRequest_(e) {
 
 function respond_(ok, code, extra, wantsHtml) {
   if (wantsHtml) {
-    var title = ok ? 'Registration received' : 'Something went wrong';
+    var title = ok ? 'Submission received' : 'Something went wrong';
     var msg = ok
-      ? 'Thanks — your camper is registered. A confirmation email with your health forms is on its way.'
-      : 'Your registration did not save. Please call the camp at 828-387-5736 so we can take it by phone.';
+      ? 'Thank you — we have received your submission and will be in touch soon.'
+      : 'Your submission did not save. Please call the camp at 828-387-5736 so we can take it by phone.';
     var html =
       '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
       '<meta name="viewport" content="width=device-width,initial-scale=1">' +
@@ -271,7 +411,7 @@ function respond_(ok, code, extra, wantsHtml) {
       'background:#faf7f1}h1{font-size:1.6rem;color:#16291f}a{color:#8f3d1d}' +
       'p.muted{color:#6b7d72;font-size:.9rem}</style></head><body>' +
       '<h1>' + title + '</h1><p>' + msg + '</p>' +
-      '<p><a href="/">Back to the camp website</a></p>' +
+      '<p><a href="https://www.jrvc.org/">Back to the camp website</a></p>' +
       '<p class="muted">Reference: ' + code + '</p>' +
       '</body></html>';
     return HtmlService.createHtmlOutput(html).setTitle(title);
@@ -286,41 +426,24 @@ function json_(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-function getSheet_() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName(SHEET_NAME);
-  if (!sheet) sheet = createSheet_(ss);
-  return sheet;
-}
-
-function createSheet_(ss) {
-  var sheet = ss.insertSheet(SHEET_NAME);
-  var headers = COLUMNS.map(function (c) { return c.label; });
-  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-  sheet.getRange(1, 1, 1, headers.length)
-    .setFontWeight('bold')
-    .setBackground('#e8dfcd');
-  sheet.setFrozenRows(1);
-  sheet.autoResizeColumns(1, headers.length);
-  sheet.getRange(2, 12, sheet.getMaxRows() - 1, 1).setNotes(''); // no-op, keeps linter quiet
-  return sheet;
-}
-
 /**
- * Run this ONCE from the Apps Script editor to create the header row and
- * verify Drive access to the parent attachment PDFs.
- * Also safe to re-run: it will not duplicate the sheet.
+ * Run this ONCE from the Apps Script editor to authorise Spreadsheet, Mail,
+ * and Drive access and verify all 5 Google Sheets + both health PDFs.
  */
 function setupSheet() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName(SHEET_NAME) || createSheet_(ss);
-  var headers = COLUMNS.map(function (c) { return c.label; });
-  sheet.getRange(1, 1, 1, headers.length)
-    .setValues([headers])
-    .setFontWeight('bold')
-    .setBackground('#e8dfcd');
-  sheet.setFrozenRows(1);
-  sheet.autoResizeColumns(1, headers.length);
+  var summary = [];
+  Object.keys(FORMS).forEach(function (key) {
+    var cfg = FORMS[key];
+    var sheet = getTargetSheet_(cfg);
+    var headers = cfg.columns.map(function (c) { return c.label; });
+    sheet.getRange(1, 1, 1, headers.length)
+      .setValues([headers])
+      .setFontWeight('bold')
+      .setBackground('#e8dfcd');
+    sheet.setFrozenRows(1);
+    sheet.autoResizeColumns(1, headers.length);
+    summary.push(cfg.sheetName + ' (' + headers.length + ' cols)');
+  });
 
   var loaded = [];
   PARENT_ATTACHMENTS.forEach(function (item) {
@@ -329,8 +452,21 @@ function setupSheet() {
     loaded.push((item.filename || f.getName()) + ' (' + Math.round(f.getSize() / 1024) + ' KB)');
   });
 
-  SpreadsheetApp.getUi().alert(
-    'Sheet "' + SHEET_NAME + '" is ready with ' + headers.length + ' columns.\n\n' +
-    'Verified parent email attachments:\n• ' + loaded.join('\n• ')
-  );
+  // Reference MailApp so Google prompts for email permission during setupSheet()
+  var quota = MailApp.getRemainingDailyQuota();
+
+  Logger.log('Verified 5 separate Google Sheets: ' + summary.join(', '));
+  Logger.log('Verified attachments: ' + loaded.join(', '));
+  Logger.log('Remaining daily email quota: ' + quota);
+
+  try {
+    SpreadsheetApp.getUi().alert(
+      'All 5 separate Google Sheets are ready!\n\n' +
+      '• ' + summary.join('\n• ') + '\n\n' +
+      'Verified parent email PDF attachments:\n• ' + loaded.join('\n• ') + '\n\n' +
+      'Remaining daily email quota: ' + quota
+    );
+  } catch (_) {
+    // Running standalone in script.google.com without a bound spreadsheet UI
+  }
 }

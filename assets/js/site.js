@@ -150,11 +150,7 @@
       if (form.hasAttribute("data-demo") || !endpoint) {
         e.preventDefault();
         var mailto = buildMailtoFallback(form);
-        if (form.hasAttribute("data-demo")) {
-          showStatus(form, "demo", "", mailto);
-        } else {
-          showStatus(form, "fail", form.getAttribute("data-fail"), mailto);
-        }
+        showStatus(form, "demo", "", mailto);
         return;
       }
 
@@ -185,6 +181,9 @@
     var status = form.querySelector(".form-status");
     if (!status) return;
     var emailLink = mailto || "mailto:kevin@jrvc.org";
+    var detail =
+      form.getAttribute("data-success-detail") ||
+      'A confirmation email is on its way. If you need us sooner, call <a href="tel:+18283875736">828-387-5736</a>.';
     if (kind === "demo") {
       status.innerHTML =
         "<strong>Online submission isn&rsquo;t connected on this form yet.</strong> " +
@@ -196,9 +195,7 @@
       status.innerHTML = "<strong>Sending&hellip;</strong> Please don&rsquo;t close this page.";
     } else if (kind === "ok") {
       status.innerHTML =
-        "<strong>" + (text || "Received.") + "</strong> " +
-        "A confirmation email is on its way within two business days. " +
-        'If you need us sooner, call <a href="tel:+18283875736">828-387-5736</a>.';
+        "<strong>" + (text || "Received.") + "</strong> " + detail;
     } else {
       status.innerHTML =
         "<strong>That didn&rsquo;t go through.</strong> " +
@@ -226,6 +223,7 @@
       if (value instanceof File) return;
       payload[key] = payload[key] === undefined ? value : payload[key] + ", " + value;
     });
+    payload._form = form.getAttribute("data-form") || "";
     payload._secret = form.getAttribute("data-secret") || "";
     payload._ajax = "1";
     payload._page = window.location.pathname;

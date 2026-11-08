@@ -22,21 +22,35 @@ const SITE = {
 
 /* ---------------------------------------------------------------------------
    Form endpoints & optional privacy-friendly analytics.
-   Paste the Apps Script Web App URL (ends in /exec) after deploying
-   deploy/apps-script/Code.gs. See deploy/GOOGLE-SHEET.md.
-   Leave empty and the form falls back to emailing the camp instead of
-   pretending to have received anything.
+   Each of the 5 website forms writes to its own separate Google Sheet:
+     1. Camper Registrations : 17aeWZVJoGTIb7XWhFJFZVkwO1dfiHqcAQpVFpl5nAvI
+     2. Retreat Inquiries    : 184KUGM_9Ri-oUM_tE_FX_zG4jyfOl2nkwCWufJNZo6Y
+     3. Mission Inquiries    : 1hH2vkYJA6TLFvsC6bw9uQoWV0-zAjrGdG_iEXRXuP8A
+     4. Contact Messages     : 11xcJ3W0349-BV7-7XC0JhCR3rPnvYJGaBznx4FsqKyA
+     5. Newsletter Signups   : 158yCHNPupvhBcvsPMPycVNCzhOFnCw_LcDXJOPmAN4w
 
-   For cookie-free analytics (Plausible), set ANALYTICS_PLAUSIBLE_DOMAIN to
-   "jrvc.org" (and allow plausible.io in deploy/jrvc-site.inc script-src/connect-src).
-   Leave empty to emit zero third-party scripts (use GoAccess on nginx logs).
+   Paste the Apps Script Web App URL (ends in /exec) into ENDPOINT_DEFAULT
+   (if using deploy/apps-script/Code.gs, which routes each form to its own
+   separate Google Sheet), or paste 5 separate /exec URLs below.
+   See deploy/GOOGLE-SHEET.md.
 --------------------------------------------------------------------------- */
-const ENDPOINT_REGISTRATION = "";
+const FORM_SECRET = "jrvc_2026_0842e65cca05b7011542ac74b693378881f166b1a41c6364";
+const ENDPOINT_DEFAULT = "";
+const ENDPOINT_REGISTRATION = "" || ENDPOINT_DEFAULT;
+const ENDPOINT_RETREATS     = "" || ENDPOINT_DEFAULT;
+const ENDPOINT_MISSIONS     = "" || ENDPOINT_DEFAULT;
+const ENDPOINT_CONTACT      = "" || ENDPOINT_DEFAULT;
+const ENDPOINT_NEWSLETTER   = "" || ENDPOINT_DEFAULT;
 const ANALYTICS_PLAUSIBLE_DOMAIN = "";
 const ANALYTICS_SCRIPT_SRC = "https://plausible.io/js/script.js";
 
 const ENDPOINTS = {
+  __FORM_SECRET__: FORM_SECRET,
   __ENDPOINT_REGISTRATION__: ENDPOINT_REGISTRATION,
+  __ENDPOINT_RETREATS__: ENDPOINT_RETREATS,
+  __ENDPOINT_MISSIONS__: ENDPOINT_MISSIONS,
+  __ENDPOINT_CONTACT__: ENDPOINT_CONTACT,
+  __ENDPOINT_NEWSLETTER__: ENDPOINT_NEWSLETTER,
 };
 
 const NAV = [
