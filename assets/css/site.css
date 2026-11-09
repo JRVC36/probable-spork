@@ -1334,3 +1334,63 @@ select {
 .text-sm { font-size: 0.92rem; }
 .text-soft { color: var(--ink-soft); }
 
+/* ─────────────────────────────────────────────
+   Statement of Faith (about.html#faith)
+   ───────────────────────────────────────────── */
+.faith-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: clamp(1rem, 2.2vw, 1.5rem);
+}
+.faith-card {
+  background: var(--white);
+  border: 1px solid var(--line-soft);
+  border-top: 3px solid var(--moss);
+  border-radius: var(--r-lg);
+  padding: clamp(1.35rem, 2.4vw, 1.85rem);
+  box-shadow: var(--shadow-sm);
+}
+.faith-card h3 {
+  font-size: 1.2rem;
+  color: var(--forest-deep);
+  margin-bottom: 0.55rem;
+}
+.faith-card p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+.faith-welcome {
+  margin-top: clamp(1.25rem, 2.5vw, 1.75rem);
+  background: var(--forest);
+  color: #dbe7d9;
+  border-radius: var(--r-lg);
+  padding: clamp(1.6rem, 3.2vw, 2.5rem);
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--sage);
+}
+.faith-welcome h3 {
+  color: var(--white);
+  font-size: clamp(1.35rem, 1.15rem + 0.6vw, 1.65rem);
+  margin-bottom: 0.6rem;
+}
+.faith-welcome p {
+  color: #dbe7d9;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  max-width: 68ch;
+  margin-bottom: 1rem;
+}
+.faith-welcome .faith-closing {
+  font-family: var(--serif);
+  font-size: clamp(1.18rem, 1.05rem + 0.5vw, 1.42rem);
+  color: var(--white);
+  margin: 0;
+}
+.faith-welcome .faith-closing strong {
+  color: var(--white);
+  font-weight: 600;
+}
+
+

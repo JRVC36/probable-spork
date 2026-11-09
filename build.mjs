@@ -147,7 +147,7 @@ const PAGES = [
   { slug: "mission-trips", file: "mission-trips.html", nav: "mission-trips.html", ogImage: "assets/img/valley-road.jpg", title: "Youth & College Mission Trips in Appalachia", desc: "All-inclusive mission trips for youth groups and college teams in the Southern Appalachian Mountains. Serving others, built around your group." },
   { slug: "facilities", file: "facilities.html", nav: "facilities.html", ogImage: "assets/img/aerial-overhead.jpg", title: "Lodging & Meeting Facilities", desc: "Modern accessible living units, cabins, primitive outpost, and meeting space across 150 acres beside the Johns River." },
   { slug: "get-involved", file: "get-involved.html", nav: "get-involved.html", ogImage: "assets/img/valley-road.jpg", title: "Give, Volunteer & Work at Camp", desc: "Fund a campership, join a work weekend, or spend a summer on staff at Johns River Valley Camp." },
-  { slug: "about", file: "about.html", nav: "about.html", ogImage: "assets/img/chapel.jpg", title: "About JRVC — Outdoor Ministry Since 1936", desc: "Johns River Valley Camp is the outdoor ministry site of the Southern Conference, United Church of Christ. Our mission, our place, and our people." },
+  { slug: "about", file: "about.html", nav: "about.html", ogImage: "assets/img/chapel.jpg", title: "About JRVC — Outdoor Ministry Since 1936", desc: "Johns River Valley Camp is the outdoor ministry site of the Southern Conference, United Church of Christ. Our mission, Statement of Faith, our place, and our people." },
   { slug: "faq", file: "faq.html", nav: "", ogImage: "assets/img/valley-road.jpg", title: "Frequently Asked Questions", desc: "Tuition, drop-off times, packing lists, staff screening, allergies, financial aid, and everything else families ask before camp." },
   { slug: "register", file: "register.html", nav: "", ogImage: "assets/img/lodge-front.jpg", title: "Register for 2026 Summer Camp", desc: "Register for a 2026 JRVC summer session. Deposit, cancellation policy, and what happens next." },
   { slug: "visit", file: "visit.html", nav: "", ogImage: "assets/img/hero.jpg", title: "Visit & Contact JRVC", desc: "Directions to 6211 NC-90, Collettsville NC. Phone, email, mailing address, and what to expect on the drive in." },
@@ -268,6 +268,14 @@ function structuredData(p) {
           acceptedAnswer: {
             "@type": "Answer",
             text: "Yes. The Campership Fund covers part or all of tuition depending on need for both residential and day camp. Requests are confidential.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is JRVC a Christian camp? Are campers of all backgrounds welcome?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Our camp is rooted in the Christian faith and the belief that God’s love invites us into a life of discovery, compassion, and community. Our welcome extends to campers and families of all backgrounds and faith traditions — wherever you are on your journey, you are welcome here.",
           },
         },
       ],
@@ -401,6 +409,7 @@ function footer() {
         <div class="foot-group">
           <h2 class="foot-h">Connect</h2>
           <ul class="foot-list">
+            <li><a href="about.html#faith">Statement of Faith</a></li>
             <li><a href="get-involved.html">Give</a></li>
             <li><a href="get-involved.html#volunteer">Volunteer</a></li>
             <li><a href="get-involved.html#staff">Work at Camp</a></li>
