@@ -1394,3 +1394,73 @@ select {
 }
 
 
+
+/* Summer 2027: a photo-led field guide, scoped to the camp page. */
+.camp-guide .camp-hero { padding-block: clamp(5rem, 10vw, 9rem); }
+.camp-guide .camp-hero h1 { font-size: clamp(3.2rem, 7vw, 6rem); line-height: 1.04; max-width: 15ch; }
+.camp-guide .camp-hero .lede { max-width: 57ch; }
+.camp-intro { background: var(--sand); padding-block: 4rem; }
+.camp-intro-head { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; align-items: center; }
+.camp-intro-head h2 { font-size: clamp(2rem, 4vw, 3.4rem); }
+.camp-intro-head > p { max-width: 45ch; color: var(--ink-soft); font-size: 1.12rem; }
+.camp-jump { display: flex; flex-wrap: wrap; gap: .65rem; margin-block: 2rem 1.5rem; }
+.camp-jump a { border: 1px solid var(--moss); border-radius: 99px; padding: .65rem 1.1rem; color: var(--forest); text-decoration: none; font-weight: 600; font-size: .88rem; }
+.camp-jump a:hover { background: var(--forest); color: white; }
+.camp-grade-note { max-width: 90ch; font-size: .87rem; color: var(--ink-soft); }
+.camp-story { padding-block: clamp(3rem, 7vw, 6rem); scroll-margin-top: 6rem; }
+.camp-story:nth-of-type(even) { background: var(--sand); }
+.camp-story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+.camp-story:nth-of-type(even) .camp-story-photo { order: 2; }
+.camp-story-photo { margin: 0; position: sticky; top: 7rem; }
+.camp-story-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 120px 120px 8px 8px; }
+.camp-story-photo picture { display: block; }
+.camp-story-photo figcaption { font-family: var(--serif); font-size: 1.25rem; margin-top: 1rem; color: var(--forest); text-align: center; }
+.camp-index { font-size: .7rem; font-weight: 750; letter-spacing: .18em; color: var(--clay-deep); border-top: 1px solid var(--line); padding-top: 1rem; }
+.camp-story-copy { min-width: 0; }
+.camp-story-copy h2 { font-size: clamp(2.1rem, 3.5vw, 3.4rem); line-height: 1.1; margin-block: .65rem; }
+.camp-story-copy .session-age { color: var(--forest); font-size: .8rem; font-weight: 650; margin-top: 1rem; }
+.camp-story-copy .session-dates { font-weight: 650; color: var(--clay-deep); margin-bottom: 1.4rem; }
+.camp-story-copy > p:not([class]) { color: var(--ink-soft); line-height: 1.8; }
+.camp-story-copy > p > strong { color: var(--forest); font-size: 1.12rem; }
+.camp-story-copy .session-price { font-size: 2.2rem; margin-block: 1rem; }
+.camp-story-copy .session-price small { font-size: .8rem; display: inline-block; margin-left: .6rem; }
+.camp-story-copy .session-cta { margin-top: 1.5rem; }
+.camp-rates { border-block: 1px solid var(--line); margin-top: 1.5rem; }
+.camp-rates summary { cursor: pointer; padding: 1rem .2rem; font-weight: 650; color: var(--forest); }
+.camp-rate-body { padding-bottom: 1rem; font-size: .9rem; }
+.camp-rate-body .price-table { font-size: .8rem; }
+.camp-rate-body caption { text-align: left; padding-block: .8rem; }
+.camp-calendar { background: var(--forest); color: var(--paper); scroll-margin-top: 5rem; }
+.camp-calendar h2, .camp-calendar .eyebrow, .camp-calendar > .shell > p { color: #faf7f1; }
+.camp-calendar .eyebrow::before { background: #faf7f1; }
+.camp-calendar .camp-calendar-row, .camp-calendar .camp-calendar-row:visited, .camp-calendar .camp-calendar-row strong, .camp-calendar .camp-calendar-row > span { color: #faf7f1; }
+.camp-calendar .camp-calendar-row:focus-visible { outline: 3px solid #fff; outline-offset: 4px; background: #294a37; }
+.camp-calendar-row { display: grid; grid-template-columns: 1fr 1.4fr 2fr auto; gap: 1rem; padding-block: 1.25rem; border-bottom: 1px solid #65816b; color: var(--paper); text-decoration: none; align-items: center; }
+.camp-calendar-row:first-of-type { margin-top: 2rem; border-top: 1px solid #65816b; }
+.camp-calendar-row > span { font-size: .88rem; }
+.camp-calendar-row:hover { color: #fff; background: #294a37; }
+@media (max-width: 760px) {
+  .camp-intro-head, .camp-story-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .camp-story:nth-of-type(even) .camp-story-photo { order: 0; }
+  .camp-story-photo { position: static; }
+  .camp-story-photo img { aspect-ratio: 4 / 3; border-radius: 70px 70px 6px 6px; }
+  .camp-calendar-row { grid-template-columns: 1fr auto; gap: .4rem 1rem; }
+  .camp-calendar-row > span:nth-child(3) { grid-column: 1; }
+  .camp-calendar-row > span:last-child { grid-column: 2; grid-row: 2; }
+}
+@media (prefers-reduced-motion: reduce) { .camp-guide { scroll-behavior: auto; } }
+
+/* Retreat availability: text labels supplement every status colour. */
+.availability-controls { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-block:2rem 1rem; }
+.availability-controls h3 { margin:0; }
+.availability-legend { display:flex; flex-wrap:wrap; gap:.5rem 1.5rem; padding-left:1rem; font-size:.85rem; }
+.availability-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:.4rem; margin-block:1.5rem; }
+.availability-weekday { text-align:center; font-weight:650; font-size:.8rem; }
+.availability-day { min-height:4.5rem; padding:.5rem; border:1px solid #89998b; border-radius:4px; background:#f8f6f0; color:#243c2c; font:inherit; font-size:.8rem; cursor:pointer; }
+.availability-open { background:#e5efdf; }
+.availability-limited, .availability-hold { background:#f6e3bd; color:#583a12; }
+.availability-unavailable { background:#e7d4ce; color:#5b2920; }
+.availability-day:disabled { opacity:.5; cursor:default; }
+.availability-day[aria-pressed="true"] { outline:3px solid var(--forest); outline-offset:1px; }
+.availability-day:focus-visible { outline:3px solid var(--clay-deep); outline-offset:2px; }
+@media(max-width:600px) { .availability-grid {gap:.2rem;} .availability-day {padding:.25rem; font-size:.65rem; overflow-wrap:anywhere;} }
