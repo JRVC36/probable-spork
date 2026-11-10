@@ -94,7 +94,7 @@ const SESSIONS_2027 = [
     "name": "Valleywide 1 (Rising grades 3–12 and graduating seniors)",
     "startDate": "2027-06-20",
     "endDate": "2027-06-26",
-    "description": "One valley. A whole camp community. A week to belong. Valleywide brings campers of different ages together for the friendships, outdoor adventures, and shared faith that make JRVC special. Activities tailored to different ages and interests give everyone room to explore, build confidence, and try something new. Shared experiences connect the whole community, from first-time campers to graduating seniors. Wherever you are in your camp journey, there’s a place for you in the valley."
+    "description": "One valley. A whole camp community. A week to belong. Valleywide brings campers of different ages together for the friendships, outdoor adventures, and shared faith that make JRVC special. Activities tailored to different ages and interests give everyone room to explore, build confidence, and try something new. Shared experiences connect the whole community, from first-time campers to graduating seniors. Wherever you are in your camp journey, there’s a place for you in the valley. Tuition is $475 per camper for the session."
   },
   {
     "id": "drama",
@@ -122,7 +122,7 @@ const SESSIONS_2027 = [
     "name": "Valleywide 2 (Rising grades 3–12 and graduating seniors)",
     "startDate": "2027-07-18",
     "endDate": "2027-07-24",
-    "description": "One valley. A whole camp community. A week to belong. Valleywide brings campers of different ages together for the friendships, outdoor adventures, and shared faith that make JRVC special. Activities tailored to different ages and interests give everyone room to explore, build confidence, and try something new. Shared experiences connect the whole community, from first-time campers to graduating seniors. Wherever you are in your camp journey, there’s a place for you in the valley."
+    "description": "One valley. A whole camp community. A week to belong. Valleywide brings campers of different ages together for the friendships, outdoor adventures, and shared faith that make JRVC special. Activities tailored to different ages and interests give everyone room to explore, build confidence, and try something new. Shared experiences connect the whole community, from first-time campers to graduating seniors. Wherever you are in your camp journey, there’s a place for you in the valley. Tuition is $475 per camper for the session."
   },
   {
     "id": "mh-paddle",
