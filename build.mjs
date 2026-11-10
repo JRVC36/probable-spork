@@ -35,7 +35,7 @@ const SITE = {
    See deploy/GOOGLE-SHEET.md.
 --------------------------------------------------------------------------- */
 const FORM_SECRET = "jrvc_2026_0842e65cca05b7011542ac74b693378881f166b1a41c6364";
-const ENDPOINT_DEFAULT = "";
+const ENDPOINT_DEFAULT = "https://script.google.com/macros/s/AKfycbwyzmjmNNdvd1-xzdSZXBW7bPB5x_HAAKIPm1tqcBpsmKB7yReZgsOm8kY27YpIaEx1Pw/exec";
 // Separate privacy-filtered web app; see deploy/availability/README.md.
 const ENDPOINT_AVAILABILITY = "https://script.google.com/macros/s/AKfycbyVG-ciz8JUV0XzaZ5Nmhkog0uGPdXlEdqoDTf9DG-84HoVXdZ6H866LooXwJD656M/exec";
 const ENDPOINT_REGISTRATION = "" || ENDPOINT_DEFAULT;
