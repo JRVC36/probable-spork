@@ -101,7 +101,7 @@ const SESSIONS_2027 = [
     "name": "Drama Camp (Rising grades 6–12 and graduating seniors)",
     "startDate": "2027-06-27",
     "endDate": "2027-07-03",
-    "description": "Find your voice. Bring a story to life. Join fellow campers for a week of imagination, rehearsals, and teamwork as you create a production together. Whether you love the spotlight or are stepping onto the stage for the first time, you’ll have opportunities to build confidence, stretch your creativity, and discover the joy of making something bigger than yourself. The week culminates in a Saturday-morning performance for families at pickup—a chance to share the story and celebrate everything you’ve created."
+    "description": "Find your voice. Bring a story to life. Join fellow campers for a week of imagination, rehearsals, and teamwork as you create a production together. Whether you love the spotlight or are stepping onto the stage for the first time, you’ll have opportunities to build confidence, stretch your creativity, and discover the joy of making something bigger than yourself. The week culminates in a Saturday-morning performance for families at pickup—a chance to share the story and celebrate everything you’ve created. Tuition is $560 per camper for the session."
   },
   {
     "id": "family-camp",
@@ -115,7 +115,7 @@ const SESSIONS_2027 = [
     "name": "Senior High Paddle Camp (Rising grades 9–12 and graduating seniors)",
     "startDate": "2027-07-11",
     "endDate": "2027-07-17",
-    "description": "Adventure is waiting around the next bend. Explore area rivers, learn paddling skills, and take on new challenges alongside fellow campers—no previous paddling experience required. An overnight trip extends the adventure, giving you more time outdoors and opportunities to build friendships and discover what you can accomplish together. Add in traditional JRVC camp activities, and you have a week of adventure, community, and faith—on and off the water."
+    "description": "Adventure is waiting around the next bend. Explore area rivers, learn paddling skills, and take on new challenges alongside fellow campers—no previous paddling experience required. An overnight trip extends the adventure, giving you more time outdoors and opportunities to build friendships and discover what you can accomplish together. Add in traditional JRVC camp activities, and you have a week of adventure, community, and faith—on and off the water. Tuition is $560 per camper for the session."
   },
   {
     "id": "valleywide-2",
@@ -129,7 +129,7 @@ const SESSIONS_2027 = [
     "name": "Middle High Paddle Camp (Rising grades 6–9)",
     "startDate": "2027-07-25",
     "endDate": "2027-07-31",
-    "description": "Grab a paddle and discover what’s around the bend. Explore area rivers, practice new skills, and grow in confidence as you share an adventure with fellow campers. No previous paddling experience is required—just a willingness to learn and try something new. An overnight trip adds to the adventure, while traditional JRVC activities round out a week of outdoor exploration, friendship, and camp fun."
+    "description": "Grab a paddle and discover what’s around the bend. Explore area rivers, practice new skills, and grow in confidence as you share an adventure with fellow campers. No previous paddling experience is required—just a willingness to learn and try something new. An overnight trip adds to the adventure, while traditional JRVC activities round out a week of outdoor exploration, friendship, and camp fun. Tuition is $560 per camper for the session."
   }
 ];
 
