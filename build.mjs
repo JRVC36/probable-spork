@@ -80,7 +80,7 @@ const IMAGES = {
   "gallery-cabin-story":    { sm: 640,  full: 1200, defaultSizes: "(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw" },
 };
 
-/* 2027 Summer Camp sessions; Adult Camp package rates are published. */
+/* 2027 Summer Camp sessions; Adult Camp and Family Camp package rates are published. */
 const SESSIONS_2027 = [
   {
     "id": "adult-camp",
@@ -108,7 +108,7 @@ const SESSIONS_2027 = [
     "name": "Family Camp (Children and the adults who call them family)",
     "startDate": "2027-07-04",
     "endDate": "2027-07-10",
-    "description": "Your family. Your adventure. Time together that matters. Bring the children in your life to JRVC for a week with room for both togetherness and independence. Parents, grandparents, aunts, uncles, guardians, foster families, and multigenerational groups are welcome—children and the adults who call them family. Enjoy activities as a family, let kids connect with other kids, and take advantage of time just for adults. With opportunities to choose your own adventure, you can find the balance of exploration, play, and rest that fits your family. Make new friends, share in the camp community, and head home with stories you’ll keep telling long after summer ends."
+    "description": "Your family. Your adventure. Time together that matters. Bring the children in your life to JRVC for a week with room for both togetherness and independence. Parents, grandparents, aunts, uncles, guardians, foster families, and multigenerational groups are welcome—children and the adults who call them family. Enjoy activities as a family, let kids connect with other kids, and take advantage of time just for adults. With opportunities to choose your own adventure, you can find the balance of exploration, play, and rest that fits your family. Make new friends, share in the camp community, and head home with stories you’ll keep telling long after summer ends. Rates per person per night include lodging, meals, and camp activities: adults 18+ $75, teens 12–17 $50, children 4–11 $30, and children 3 and under free. Choose July 4–7 or July 7–10 (3 nights: adults $225, teens $150, children 4–11 $90), or July 4–10 (6 nights: adults $450, teens $300, children 4–11 $180)."
   },
   {
     "id": "sh-paddle",
