@@ -80,69 +80,62 @@ const IMAGES = {
   "gallery-cabin-story":    { sm: 640,  full: 1200, defaultSizes: "(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw" },
 };
 
-/* 2026 Summer Camp sessions (single-sourced for structured data) */
-const SESSIONS_2026 = [
+/* 2027 Summer Camp sessions; Adult Camp package rates are published. */
+const SESSIONS_2027 = [
   {
-    id: "juniors-crafts",
-    name: "Juniors: Arts & Crafts (Rising Grades 3–5)",
-    startDate: "2026-06-21",
-    endDate: "2026-06-27",
-    price: "485",
-    description: "Six-night residential camp session for rising 3rd–5th graders focused on making things by hand, archery, tubing the Johns River, hiking, and campfire.",
+    "id": "adult-camp",
+    "name": "Adult Camp (Adults only)",
+    "startDate": "2027-06-13",
+    "endDate": "2027-06-19",
+    "description": "Who says camp is just for kids? Rediscover the joy of summer camp—with the freedom to enjoy it your way. Join in scheduled activities, share laughter and conversation, or settle beside the river with a good book. Whether you’re looking for adventure, connection, or a little breathing room, Adult Camp offers traditional camp fun at your own pace. Come ready to play, rest, and make room for joy. Rates include lodging, meals, and camp activities: $99 per adult per night double occupancy or $125 single occupancy. Stay June 13–16 or June 16–19 (3 nights: $297 double / $375 single per adult), or June 13–19 (6 nights: $594 double / $750 single per adult)."
   },
   {
-    id: "juniors-cooking",
-    name: "Juniors: Cooking (Rising Grades 3–5)",
-    startDate: "2026-07-12",
-    endDate: "2026-07-18",
-    price: "485",
-    description: "Six-night residential camp session for rising 3rd–5th graders cooking alongside camp kitchen staff plus afternoon outdoor camp activities.",
+    "id": "valleywide-1",
+    "name": "Valleywide 1 (Rising grades 3–12 and graduating seniors)",
+    "startDate": "2027-06-20",
+    "endDate": "2027-06-26",
+    "description": "One valley. A whole camp community. A week to belong. Valleywide brings campers of different ages together for the friendships, outdoor adventures, and shared faith that make JRVC special. Activities tailored to different ages and interests give everyone room to explore, build confidence, and try something new. Shared experiences connect the whole community, from first-time campers to graduating seniors. Wherever you are in your camp journey, there’s a place for you in the valley."
   },
   {
-    id: "mh-paddle",
-    name: "Middle High: Paddle (Rising Grades 6–8)",
-    startDate: "2026-07-12",
-    endDate: "2026-07-18",
-    price: "545",
-    description: "Six-night residential camp session for rising 6th–8th graders built around paddling, river time, and an overnight under the stars.",
+    "id": "drama",
+    "name": "Drama Camp (Rising grades 6–12 and graduating seniors)",
+    "startDate": "2027-06-27",
+    "endDate": "2027-07-03",
+    "description": "Find your voice. Bring a story to life. Join fellow campers for a week of imagination, rehearsals, and teamwork as you create a production together. Whether you love the spotlight or are stepping onto the stage for the first time, you’ll have opportunities to build confidence, stretch your creativity, and discover the joy of making something bigger than yourself. The week culminates in a Saturday-morning performance for families at pickup—a chance to share the story and celebrate everything you’ve created."
   },
   {
-    id: "mh-caving",
-    name: "Middle High: Caving (Rising Grades 6–8)",
-    startDate: "2026-07-19",
-    endDate: "2026-07-25",
-    price: "545",
-    description: "Six-night residential camp session for rising 6th–8th graders featuring guided off-site cave exploration and classic camp activities.",
+    "id": "family-camp",
+    "name": "Family Camp (Children and the adults who call them family)",
+    "startDate": "2027-07-04",
+    "endDate": "2027-07-10",
+    "description": "Your family. Your adventure. Time together that matters. Bring the children in your life to JRVC for a week with room for both togetherness and independence. Parents, grandparents, aunts, uncles, guardians, foster families, and multigenerational groups are welcome—children and the adults who call them family. Enjoy activities as a family, let kids connect with other kids, and take advantage of time just for adults. With opportunities to choose your own adventure, you can find the balance of exploration, play, and rest that fits your family. Make new friends, share in the camp community, and head home with stories you’ll keep telling long after summer ends."
   },
   {
-    id: "sh-adventure",
-    name: "Senior High: High Adventure (Rising Grades 9–12)",
-    startDate: "2026-06-21",
-    endDate: "2026-06-27",
-    price: "545",
-    description: "Six-night residential camp session for rising 9th–12th graders with off-site climbing and whitewater paddling trips.",
+    "id": "sh-paddle",
+    "name": "Senior High Paddle Camp (Rising grades 9–12 and graduating seniors)",
+    "startDate": "2027-07-11",
+    "endDate": "2027-07-17",
+    "description": "Adventure is waiting around the next bend. Explore area rivers, learn paddling skills, and take on new challenges alongside fellow campers—no previous paddling experience required. An overnight trip extends the adventure, giving you more time outdoors and opportunities to build friendships and discover what you can accomplish together. Add in traditional JRVC camp activities, and you have a week of adventure, community, and faith—on and off the water."
   },
   {
-    id: "sh-paddle",
-    name: "Senior High: Paddle (Rising Grades 9–12)",
-    startDate: "2026-06-28",
-    endDate: "2026-07-04",
-    price: "545",
-    description: "Six-night residential camp session for rising 9th–12th graders with river days, lake afternoons, and a July 4 campfire.",
+    "id": "valleywide-2",
+    "name": "Valleywide 2 (Rising grades 3–12 and graduating seniors)",
+    "startDate": "2027-07-18",
+    "endDate": "2027-07-24",
+    "description": "One valley. A whole camp community. A week to belong. Valleywide brings campers of different ages together for the friendships, outdoor adventures, and shared faith that make JRVC special. Activities tailored to different ages and interests give everyone room to explore, build confidence, and try something new. Shared experiences connect the whole community, from first-time campers to graduating seniors. Wherever you are in your camp journey, there’s a place for you in the valley."
   },
   {
-    id: "day-camp",
-    name: "JRVC Summer Day Camp (Rising Grades 1–6)",
-    startDate: "2026-06-22",
-    endDate: "2026-07-31",
-    price: "249",
-    description: "Six weekly Monday–Friday day camp sessions (8:30 a.m. to 4:30 p.m.) for rising 1st–6th graders, including lunch and all activities.",
-  },
+    "id": "mh-paddle",
+    "name": "Middle High Paddle Camp (Rising grades 6–9)",
+    "startDate": "2027-07-25",
+    "endDate": "2027-07-31",
+    "description": "Grab a paddle and discover what’s around the bend. Explore area rivers, practice new skills, and grow in confidence as you share an adventure with fellow campers. No previous paddling experience is required—just a willingness to learn and try something new. An overnight trip adds to the adventure, while traditional JRVC activities round out a week of outdoor exploration, friendship, and camp fun."
+  }
 ];
 
 const PAGES = [
   { slug: "index", file: "home.html", nav: "", ogImage: "assets/img/hero.jpg", title: "Summer Camp & Retreat Center in the Blue Ridge Mountains", desc: "Johns River Valley Camp has welcomed campers to the Blue Ridge foothills since 1936. Summer camp, retreats, and mission trips in Collettsville, NC." },
-  { slug: "summer-camp", file: "summer-camp.html", nav: "summer-camp.html", ogImage: "assets/img/rafting.jpg", title: "2026 Summer Camp — Sessions, Ages & Tuition", desc: "Six residential sessions for rising 3rd–12th graders plus six weeks of day camp for rising 1st–6th graders, June–July 2026. Ages, dates, tuition, and what's included." },
+  { slug: "summer-camp", file: "summer-camp.html", nav: "summer-camp.html", ogImage: "assets/img/rafting.jpg", title: "2027 Summer Camp — Sessions, Dates & Adventures", desc: "Explore JRVC summer 2027: Adult Camp, Valleywide, Drama, Family Camp, and Paddle Camps, June 13–July 31. Dates, rising grades, and camp descriptions." },
   { slug: "retreats", file: "retreats.html", nav: "retreats.html", ogImage: "assets/img/lodge-timber.jpg", title: "Group Retreats & Meeting Space — Rates & Booking", desc: "Plan a retreat, staff training, family reunion, or wedding at JRVC. Lodging for 8–120, meals included, published rates, year-round availability." },
   { slug: "mission-trips", file: "mission-trips.html", nav: "mission-trips.html", ogImage: "assets/img/valley-road.jpg", title: "Youth & College Mission Trips in Appalachia", desc: "All-inclusive mission trips for youth groups and college teams in the Southern Appalachian Mountains. Serving others, built around your group." },
   { slug: "facilities", file: "facilities.html", nav: "facilities.html", ogImage: "assets/img/aerial-overhead.jpg", title: "Lodging & Meeting Facilities", desc: "Modern accessible living units, cabins, primitive outpost, and meeting space across 150 acres beside the Johns River." },
@@ -207,9 +200,9 @@ function structuredData(p) {
   const graph = [orgNode];
 
   if (p.slug === "summer-camp" || p.slug === "index") {
-    for (const s of SESSIONS_2026) {
+    for (const s of SESSIONS_2027) {
       graph.push({
-        "@type": "ChildrensEvent",
+        "@type": "Event",
         name: s.name,
         description: s.description,
         startDate: s.startDate,
@@ -223,13 +216,6 @@ function structuredData(p) {
           address: placeAddress,
         },
         organizer: { "@id": orgId },
-        offers: {
-          "@type": "Offer",
-          price: s.price,
-          priceCurrency: "USD",
-          availability: "https://schema.org/InStock",
-          url: `${SITE.url}/register.html?session=${s.id}#form`,
-        },
       });
     }
   }
