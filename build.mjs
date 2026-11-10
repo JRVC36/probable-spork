@@ -190,7 +190,7 @@ function structuredData(p) {
     image: `${SITE.url}/${p.ogImage || "assets/img/hero.jpg"}`,
     telephone: "+1-828-387-5736",
     email: SITE.email,
-    priceRange: "$48–$545",
+    priceRange: "$18–$545",
     address: placeAddress,
     geo: {
       "@type": "GeoCoordinates",

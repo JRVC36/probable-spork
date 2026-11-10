@@ -17,7 +17,7 @@
 <link rel="preload" href="assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/site.css?v=caa99e9a">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":["Organization","Campground","LocalBusiness"],"@id":"https://www.jrvc.org/#organization","name":"Johns River Valley Camp","alternateName":"JRVC","foundingDate":"1936","url":"https://www.jrvc.org/","logo":"https://www.jrvc.org/assets/img/favicon.svg","image":"https://www.jrvc.org/assets/img/lodge-timber.jpg","telephone":"+1-828-387-5736","email":"kevin@jrvc.org","priceRange":"$48–$545","address":{"@type":"PostalAddress","streetAddress":"6211 NC-90","addressLocality":"Collettsville","addressRegion":"NC","postalCode":"28611","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":35.9325,"longitude":-81.6689},"parentOrganization":{"@type":"Organization","name":"Southern Conference of the United Church of Christ","url":"https://soc-ucc.org"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":["Organization","Campground","LocalBusiness"],"@id":"https://www.jrvc.org/#organization","name":"Johns River Valley Camp","alternateName":"JRVC","foundingDate":"1936","url":"https://www.jrvc.org/","logo":"https://www.jrvc.org/assets/img/favicon.svg","image":"https://www.jrvc.org/assets/img/lodge-timber.jpg","telephone":"+1-828-387-5736","email":"kevin@jrvc.org","priceRange":"$18–$545","address":{"@type":"PostalAddress","streetAddress":"6211 NC-90","addressLocality":"Collettsville","addressRegion":"NC","postalCode":"28611","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":35.9325,"longitude":-81.6689},"parentOrganization":{"@type":"Organization","name":"Southern Conference of the United Church of Christ","url":"https://soc-ucc.org"}}]}</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -87,15 +87,16 @@
       </div>
 
       <div class="facts-card">
-        <h2>Booking facts</h2>
+        <h2>Rental rate summary</h2>
         <ul class="facts-list">
-          <li><span class="fk">Group size</span><span class="fv">8&ndash;120 people</span></li>
-          <li><span class="fk">Available</span><span class="fv">Aug&ndash;May</span></li>
-          <li><span class="fk">Lodging rates</span><span class="fv">From $62 /person</span></li>
-          <li><span class="fk">Meals</span><span class="fv">$28 /person /day</span></li>
-          <li><span class="fk">Meeting space</span><span class="fv">Included with lodging</span></li>
-          <li><span class="fk">Minimum stay</span><span class="fv">2 nights</span></li>
-          <li><span class="fk">Deposit</span><span class="fv">25% to hold dates</span></li>
+          <li><span class="fk">Lodge Room (UCC)</span><span class="fv">$80 /room /night</span></li>
+          <li><span class="fk">Lodge Room (Non-UCC)</span><span class="fv">$95 /room /night</span></li>
+          <li><span class="fk">Mt. Zion Cabin (sleeps 12)</span><span class="fv">$120 /night flat</span></li>
+          <li><span class="fk">Standard Cabin (sleeps 8&ndash;10)</span><span class="fv">$75 /cabin /night</span></li>
+          <li><span class="fk">Tent / RV Camping</span><span class="fv">$18 tent &middot; $25 RV /night</span></li>
+          <li><span class="fk">Dining Hall + Kitchen</span><span class="fv">$160 /day</span></li>
+          <li><span class="fk">Bridge Meeting Unit</span><span class="fv">$135 /day</span></li>
+          <li><span class="fk">Outdoor Chapel</span><span class="fv">$500 /day</span></li>
         </ul>
         <div class="facts-cta">
           <a class="btn btn-primary btn-block" href="#inquiry">Check your dates</a>
@@ -105,71 +106,106 @@
   </div>
 </section>
 
-<section class="bg-sand">
+<section class="bg-sand" id="rates">
   <div class="shell">
     <div class="section-head">
       <p class="eyebrow">What it costs</p>
-      <h2>Rates, published.</h2>
-      <p class="lede">Per-person nightly rates include lodging and use of all meeting and program space. Meals are billed separately and can be added or dropped per meal. Groups under 20 are billed at the 20-person rate.</p>
+      <h2>2027 rental rate sheet.</h2>
+      <p class="lede">Straightforward flat rates per room, cabin, campsite, and facility &mdash; so your group, family, or church can budget before you call.</p>
     </div>
 
-    <div class="table-scroll">
+    <h3 class="group-heading">Overnight Accommodations</h3>
+    <div class="table-scroll group-grid">
       <table class="price-table">
         <thead>
           <tr>
-            <th scope="col">Accommodation</th>
-            <th scope="col">Sleeps</th>
-            <th scope="col">Bathrooms</th>
-            <th scope="col">Per person / night</th>
-            <th scope="col">Accessible</th>
+            <th scope="col">Accommodation Type</th>
+            <th scope="col">Rate (per night)</th>
+            <th scope="col">Details &amp; Capacity</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <th scope="row">Boger Shuford Living Unit</th>
-            <td>20&ndash;24 per building</td>
-            <td>Private, per bedroom</td>
-            <td class="num">$78</td>
-            <td>Yes</td>
+            <th scope="row">Lodge Room <span class="muted">(Non-UCC)</span></th>
+            <td class="num">$95 <span class="muted">/room</span></td>
+            <td>Per room. Each room has a private bath.</td>
+          </tr>
+          <tr>
+            <th scope="row">Lodge Room <span class="muted">(UCC Member)</span></th>
+            <td class="num">$80 <span class="muted">/room</span></td>
+            <td>Per room. For members of United Church of Christ congregations. Private bath.</td>
           </tr>
           <tr>
             <th scope="row">Mt. Zion Cabin</th>
-            <td>Up to 12</td>
-            <td>2</td>
-            <td class="num">$72</td>
-            <td>Yes</td>
+            <td class="num">$120 <span class="muted">/unit</span></td>
+            <td>Flat rate for the entire unit. Ideal for larger families or groups. 3 BR, 2 BA; sleeps up to 12 in bunk beds.</td>
           </tr>
           <tr>
-            <th scope="row">Main Site cabins</th>
-            <td>8&ndash;14 per cabin</td>
-            <td>Shared bathhouse</td>
-            <td class="num">$62</td>
-            <td>Bathhouse accessible</td>
-          </tr>
-          <tr>
-            <th scope="row">Outpost</th>
-            <td>Up to 40</td>
-            <td>Latrines</td>
-            <td class="num">$48</td>
-            <td>No &mdash; primitive site</td>
+            <th scope="row">Standard Cabin</th>
+            <td class="num">$75 <span class="muted">/cabin</span></td>
+            <td>Flat rate per cabin. Sleeps up to 8&ndash;10 guests in bunk beds, with shared bathhouse access.</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="grid grid-2 mt-3">
-      <div class="card">
-        <div class="card-body">
-          <p class="card-meta">Meals</p>
-          <h3>$28 per person, per day</h3>
-          <p>Three meals in the dining hall. Vegetarian and allergy accommodations with two weeks&rsquo; notice. Groups may opt out of individual meals to cook for themselves in the unit kitchens.</p>
+      <div>
+        <h3 class="group-heading">Camping Sites</h3>
+        <div class="table-scroll">
+          <table class="price-table">
+            <thead>
+              <tr>
+                <th scope="col">Site Type</th>
+                <th scope="col">Rate (per night)</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Tent Site</th>
+                <td class="num">$18 <span class="muted">/tent</span></td>
+                <td>Per tent. Access to shared bathhouse facilities.</td>
+              </tr>
+              <tr>
+                <th scope="row">Camper / RV Site</th>
+                <td class="num">$25 <span class="muted">/site</span></td>
+                <td>Per site. Includes water and electric hookups.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <div class="card">
-        <div class="card-body">
-          <p class="card-meta">Included</p>
-          <h3>No add-on fees</h3>
-          <p>Meeting space, tables and chairs, projector, central heat and air, on-site parking, and access to the trails, chapels, basketball court, and river frontage are included in the lodging rate. There is no facility fee.</p>
+
+      <div>
+        <h3 class="group-heading">Facility Rentals</h3>
+        <div class="table-scroll">
+          <table class="price-table">
+            <thead>
+              <tr>
+                <th scope="col">Facility</th>
+                <th scope="col">Rate (per day)</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Dining Hall</th>
+                <td class="num">$160 <span class="muted">/day</span></td>
+                <td>Includes use of the main hall and kitchen facilities.</td>
+              </tr>
+              <tr>
+                <th scope="row">Bridge Unit</th>
+                <td class="num">$135 <span class="muted">/day</span></td>
+                <td>A versatile meeting space perfect for workshops or gatherings.</td>
+              </tr>
+              <tr>
+                <th scope="row">Outdoor Chapel</th>
+                <td class="num">$500 <span class="muted">/day</span></td>
+                <td>Ideal for worship services, weddings, or vow renewals.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -304,7 +340,7 @@
     <div class="acc acc--narrow">
       <details>
         <summary>Can we cook for ourselves?</summary>
-        <div class="acc-body"><p>Yes. The Boger Shuford units and Mt. Zion Cabin have full kitchens. You can take meals in the dining hall, cook in your unit, or mix the two &mdash; tell us which meals you want and we will bill accordingly.</p></div>
+        <div class="acc-body"><p>Yes. The Boger Shuford lodge units and Mt. Zion Cabin have kitchens, and you can also rent the main Dining Hall and commercial kitchen for $160 per day.</p></div>
       </details>
       <details>
         <summary>What is the site like for someone with mobility needs?</summary>
@@ -316,7 +352,7 @@
       </details>
       <details>
         <summary>Can we hold a wedding or memorial service?</summary>
-        <div class="acc-body"><p>Yes, and the outdoor chapels are the reason many people do. We host weddings, memorials, family reunions, and retirement parties. Tell us what you are planning in the inquiry form and we will walk through space, seating, and catering.</p></div>
+        <div class="acc-body"><p>Yes, and the outdoor chapels are the reason many people do. The Outdoor Chapel is $500 per day for worship services, weddings, or vow renewals, and the Dining Hall &amp; kitchen is $160 per day. Tell us what you are planning in the inquiry form and we will walk through space, seating, and lodging.</p></div>
       </details>
       <details>
         <summary>What is the cancellation policy?</summary>
