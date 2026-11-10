@@ -331,6 +331,7 @@ function head(p) {
 <link rel="preload" href="assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/site.css?v=${assetVersion}">${analytics}${jsonLd}
+${p.slug === "get-involved" ? '<script src="https://zeffy-scripts.s3.ca-central-1.amazonaws.com/embed-form-script.min.js" defer></script>' : ""}
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>`;
