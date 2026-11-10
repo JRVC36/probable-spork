@@ -36,6 +36,8 @@ const SITE = {
 --------------------------------------------------------------------------- */
 const FORM_SECRET = "jrvc_2026_0842e65cca05b7011542ac74b693378881f166b1a41c6364";
 const ENDPOINT_DEFAULT = "";
+// Separate privacy-filtered web app; see deploy/availability/README.md.
+const ENDPOINT_AVAILABILITY = "https://script.google.com/macros/s/AKfycbyVG-ciz8JUV0XzaZ5Nmhkog0uGPdXlEdqoDTf9DG-84HoVXdZ6H866LooXwJD656M/exec";
 const ENDPOINT_REGISTRATION = "" || ENDPOINT_DEFAULT;
 const ENDPOINT_RETREATS     = "" || ENDPOINT_DEFAULT;
 const ENDPOINT_MISSIONS     = "" || ENDPOINT_DEFAULT;
@@ -46,6 +48,7 @@ const ANALYTICS_SCRIPT_SRC = "https://plausible.io/js/script.js";
 
 const ENDPOINTS = {
   __FORM_SECRET__: FORM_SECRET,
+  __ENDPOINT_AVAILABILITY__: ENDPOINT_AVAILABILITY,
   __ENDPOINT_REGISTRATION__: ENDPOINT_REGISTRATION,
   __ENDPOINT_RETREATS__: ENDPOINT_RETREATS,
   __ENDPOINT_MISSIONS__: ENDPOINT_MISSIONS,
@@ -142,7 +145,7 @@ const PAGES = [
   { slug: "get-involved", file: "get-involved.html", nav: "get-involved.html", ogImage: "assets/img/valley-road.jpg", title: "Give, Volunteer & Work at Camp", desc: "Fund a campership, join a work weekend, or spend a summer on staff at Johns River Valley Camp." },
   { slug: "about", file: "about.html", nav: "about.html", ogImage: "assets/img/chapel.jpg", title: "About JRVC — Outdoor Ministry Since 1936", desc: "Johns River Valley Camp is the outdoor ministry site of the Southern Conference, United Church of Christ. Our mission, Statement of Faith, our place, and our people." },
   { slug: "faq", file: "faq.html", nav: "", ogImage: "assets/img/valley-road.jpg", title: "Frequently Asked Questions", desc: "Tuition, drop-off times, packing lists, staff screening, allergies, financial aid, and everything else families ask before camp." },
-  { slug: "register", file: "register.html", nav: "", ogImage: "assets/img/lodge-front.jpg", title: "Register for 2026 Summer Camp", desc: "Register for a 2026 JRVC summer session. Deposit, cancellation policy, and what happens next." },
+  { slug: "register", file: "register.html", nav: "", ogImage: "assets/img/lodge-front.jpg", title: "Register for 2027 Summer Camp", desc: "Register for a 2027 JRVC summer session. Deposit, cancellation policy, and what happens next." },
   { slug: "visit", file: "visit.html", nav: "", ogImage: "assets/img/hero.jpg", title: "Visit & Contact JRVC", desc: "Directions to 6211 NC-90, Collettsville NC. Phone, email, mailing address, and what to expect on the drive in." },
   { slug: "404", file: "404.html", nav: "", ogImage: "assets/img/hero.jpg", noindex: true, title: "Page not found", desc: "That page has moved or never existed. Find summer camp, retreats, and contact details for Johns River Valley Camp." },
   { slug: "privacy", file: "privacy.html", nav: "", ogImage: "assets/img/hero.jpg", title: "Privacy Policy", desc: "What information Johns River Valley Camp collects, why, and how to have it removed." },

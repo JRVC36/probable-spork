@@ -49,6 +49,22 @@
   </div>
 </section>
 
+<section class="retreat-availability bg-sand" id="availability" data-availability-endpoint="__ENDPOINT_AVAILABILITY__">
+  <div class="shell">
+    <p class="eyebrow">Plan your time in the valley</p>
+    <h2>Find your retreat dates.</h2>
+    <p>Explore the next twelve months. Individual spaces may still be available when another group is on site.</p>
+    <p class="note">Availability is subject to confirmation. An inquiry does not reserve your dates. Dates use Eastern Time; a booking touching any part of a day is shown conservatively for that day.</p>
+    <div class="availability-controls"><button type="button" class="btn btn-ghost" data-month-prev aria-label="Previous month">←</button><h3 data-month-label></h3><button type="button" class="btn btn-ghost" data-month-next aria-label="Next month">→</button></div>
+    <p data-availability-message role="status" aria-live="polite">Contact us to confirm availability.</p>
+    <ul class="availability-legend"><li>Open: available to inquire</li><li>Limited: some spaces reserved</li><li>Hold: contact us</li><li>Unavailable: camp-wide booking</li><li>Confirm: availability not verified</li></ul>
+    <div class="availability-grid" data-availability-grid aria-label="Retreat availability calendar"></div>
+    <p data-selected-date role="status" aria-live="polite">Choose a date to start your inquiry.</p>
+    <a class="btn btn-primary" href="#inquiry">Request retreat dates</a>
+    <noscript><p>Please call <a href="tel:+18283875736">828-387-5736</a> or use the inquiry form to check dates.</p></noscript>
+  </div>
+</section>
+
 <section class="bg-sand" id="rates">
   <div class="shell">
     <div class="section-head">
@@ -311,3 +327,5 @@
   <a class="btn btn-ghost btn-sm" href="tel:+18283875736">Call</a>
   <a class="btn btn-primary" href="#inquiry">Check your dates</a>
 </div>
+
+<script src="assets/js/availability.js" defer></script>
