@@ -30,3 +30,38 @@ test('backend enforces session-specific registration requirements',()=>{
  assert.equal(valid({session:'family-camp',stay:'first-half',family_members:'Child, 7'}),true);
  assert.equal(valid({session:'family-camp',stay:'first-half'}),false);
 });
+test('approved family, retreat, arrival and retention policies remain published',()=>{
+ const registration=read('register.html'), faq=read('faq.html');
+ assert.ok(registration.includes('one $100 deposit per family reservation'));
+ assert.ok(registration.includes('name="payment_choice"'));
+ assert.ok(registration.includes('No payment is collected on this page'));
+ for(const page of ['register.html','index.html','summer-camp.html','faq.html']){
+  const text=read(page);assert.ok(text.includes('Wednesday checkout is at 10:00 a.m. and check-in is at 4:00 p.m.'),page);
+ }
+ assert.ok(faq.includes('Both discounts can apply together'));
+ assert.ok(faq.includes('$30 per person per day'));
+ assert.ok(read('retreats.html').includes('up to one week'));
+ assert.ok(read('privacy.html').includes('up to seven years'));
+});
+test('camp payment links remain separate from donations and do not assert paid status',()=>{
+ const page=read('register.html'),backend=read('deploy/apps-script/Code.gs');
+ for(const url of ['https://www.zeffy.com/en-US/ticketing/summer-camp-deposit-4','https://www.zeffy.com/en-US/ticketing/campsevents']){
+  assert.ok(page.includes(url));assert.ok(backend.includes(url));
+ }
+ assert.ok(page.includes('wait for staff to confirm'));
+ assert.ok(page.includes('There are no automatic future charges'));
+ assert.ok(page.includes('not enrollment or a zero balance'));
+ assert.ok(read('get-involved.html').includes('jrvc-donations'));
+ assert.ok(!read('get-involved.html').includes('summer-camp-deposit-4'));
+});
+test('visitor clarity: calendar first, registration steps, meals and donation designations',()=>{
+ const camp=read('summer-camp.html');
+ assert.ok(camp.indexOf('id="camp-calendar"')<camp.indexOf('id="how-to-register"'));
+ assert.equal((camp.match(/class="arrow-link camp-faq-link"/g)||[]).length,7);
+ assert.ok(read('facilities.html').includes('$30 per person per day'));
+ assert.ok(read('retreats.html').includes('Published rates'));
+ assert.ok(!read('retreats.html').includes('Publishable rates'));
+ assert.ok(!read('visit.html').includes('90 minutes from Charlotte'));
+ assert.ok(read('get-involved.html').includes('Before you give:'));
+ assert.ok(read('register.html').includes('Staff matches your payment'));
+});

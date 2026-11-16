@@ -1468,3 +1468,4 @@ select {
 /* Keep verification usable in both full-width and compact newsletter forms. */
 .turnstile-container { margin-block: 1rem; min-width: 0; max-width: 100%; }
 .newsletter-form .turnstile-container { flex-basis: 100%; width: 100%; }
+.camp-faq-link { display: inline-block; margin: .75rem 0 .25rem 1rem; }

@@ -16,9 +16,9 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/site.css?v=7d37e45c">
+<link rel="stylesheet" href="assets/css/site.css?v=33a192bb">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":["Organization","Campground","LocalBusiness"],"@id":"https://www.jrvc.org/#organization","name":"Johns River Valley Camp","alternateName":"JRVC","foundingDate":"1936","url":"https://www.jrvc.org/","logo":"https://www.jrvc.org/assets/img/favicon.svg","image":"https://www.jrvc.org/assets/img/lodge-front.jpg","telephone":"+1-828-387-5736","email":"kevin@jrvc.org","priceRange":"$18–$750","address":{"@type":"PostalAddress","streetAddress":"6211 NC-90","addressLocality":"Collettsville","addressRegion":"NC","postalCode":"28611","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":35.9325,"longitude":-81.6689},"parentOrganization":{"@type":"Organization","name":"Southern Conference of the United Church of Christ","url":"https://soc-ucc.org"}}]}</script>
-<script src="assets/js/turnstile.js?v=7d37e45c" defer></script>
+<script src="assets/js/turnstile.js?v=33a192bb" defer></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=jrvcTurnstileReady&amp;render=explicit" defer></script>
 
 </head>
@@ -70,7 +70,7 @@
     </ol>
     <p class="eyebrow">Summer 2027</p>
     <h1>Register for camp.</h1>
-    <p class="lede">Use this form to request registration. For Family Camp, list accompanying family members so staff can confirm the group’s arrangements. Staff will confirm availability and deposit instructions within two business days.</p>
+    <p class="lede">Use this form to request registration. For Family Camp, submit one reservation per family: enter the primary participant below and list all accompanying family members and ages. Staff will confirm availability and deposit instructions within two business days.</p>
   </div>
 </section>
 
@@ -117,10 +117,19 @@
           </fieldset>
           <fieldset class="form-fieldset" data-registration-options="family" hidden disabled>
             <legend>Your Family Camp group</legend>
-            <div class="field"><label for="family-members">Accompanying family members and ages *</label><textarea id="family-members" name="family_members" rows="4" maxlength="3000" required></textarea></div>
+            <div class="field"><label for="family-members">All accompanying family members and ages *</label><textarea id="family-members" name="family_members" rows="4" maxlength="3000" required></textarea></div>
           </fieldset>
           <noscript><p>Please contact the camp to arrange Adult or Family Camp stay and lodging details.</p></noscript>
 
+          <div class="field">
+            <label for="payment-choice">Preferred payment option *</label>
+            <select id="payment-choice" name="payment_choice" required>
+              <option value="">Choose an option</option>
+              <option value="deposit">Pay the $100 deposit ($100 per family reservation for Family Camp)</option>
+              <option value="full">Pay the full balance</option>
+            </select>
+            <p class="hint">This records your preference only. No payment is taken on this form; staff will confirm availability, applicable discounts, and payment instructions.</p>
+          </div>
           <div class="field-row">
             <div class="field">
               <label for="cfirst">Participant first name <span class="req">*</span></label>
@@ -189,7 +198,7 @@
           <div class="field mt-1">
             <label class="check-opt">
               <input type="checkbox" name="agreement" required>
-              <span>I have read the <a href="faq.html">camp policies</a> and understand the $100 deposit is applied to tuition and refundable until 30 days before the session. <span class="req">*</span></span>
+              <span>I have read the <a href="faq.html">camp policies</a> and understand the $100 deposit is applied to tuition and refundable for cancellations more than 30 days before the stay begins. Family Camp has one $100 deposit per family reservation for either a three-night or six-night stay. <span class="req">*</span></span>
             </label>
           </div>
 
@@ -202,7 +211,7 @@
           <noscript><p>JavaScript is required for bot verification. Please call <a href="tel:+18283875736">828-387-5736</a> for assistance.</p></noscript>
           <button type="submit" class="btn btn-primary btn-lg btn-block mt-2">Submit registration</button>
 
-          <p class="note note--tight">No payment is collected on this page. Within two business days we will email your confirmation and instructions for the $100 deposit that holds your camper&rsquo;s spot.</p>
+          <p class="note note--tight">No payment is collected on this page. Choose deposit or full payment above; staff will confirm availability and payment instructions within two business days. After staff confirmation, use the <a href="#camp-payments">camp payment links</a> to pay through Zeffy. Family Camp requires only one $100 deposit per family reservation.</p>
 
           <p class="form-status" hidden tabindex="-1" role="status" aria-live="polite"></p>
         </form>
@@ -212,19 +221,26 @@
         <div class="facts-card facts-card--spaced">
           <h2>What happens next</h2>
           <ol class="steps steps--card">
-            <li>
-              <h3>You submit this form</h3>
-              <p>A $100 deposit reserves the spot. The balance is due two weeks before your session.</p>
-            </li>
-            <li>
-              <h3>We confirm by email</h3>
-              <p>An automatic acknowledgment is separate from staff confirmation. Staff will confirm availability and send deposit instructions within two business days. Please contact us if an acknowledgment does not arrive.</p>
-            </li>
-            <li>
-              <h3>Plan your arrival</h3>
-              <p>Youth sessions begin Sunday with check-in from 3:00–4:30 p.m. Adult and Family Camp also have Wednesday stays; staff will confirm arrival and departure times for your selected stay.</p>
-            </li>
+            <li><h3>Submit a registration request</h3><p>Choose a session and your payment preference. Family Camp uses one reservation and one $100 deposit per family. Submission alone does not reserve a place.</p></li>
+            <li><h3>Staff confirms availability</h3><p>We respond within two business days with your amount due, applicable discounts, and payment instructions. An automatic acknowledgment is not confirmed enrollment; health forms may accompany that acknowledgment.</p></li>
+            <li><h3>Pay through Zeffy</h3><p>After staff confirms space, pay the $100 deposit or full amount. The deposit is applied to tuition; any balance is due two weeks before your stay begins.</p></li>
+            <li><h3>Receive enrollment confirmation</h3><p>Staff matches your payment to your request and confirms enrollment and any remaining balance. A Zeffy receipt alone does not confirm enrollment.</p></li>
           </ol>
+          <p class="note">Sunday check-in is 3:00–4:30 p.m.; Saturday checkout is 9:00–10:00 a.m. Wednesday checkout is at 10:00 a.m. and check-in is at 4:00 p.m.</p>
+          <p><a href="faq.html#resident-camp">Camp policies, packing, and financial assistance</a> · <a href="faq.html#safety">Safety and health FAQ</a></p>
+        </div>
+
+        <div class="callout" id="camp-payments">
+          <h3>Pay for camp through Zeffy</h3>
+          <p>First submit your registration request and wait for staff to confirm space and payment instructions. If your reservation is already confirmed, use the appropriate link below.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="https://www.zeffy.com/en-US/ticketing/summer-camp-deposit-4" target="_blank" rel="noopener noreferrer">Pay the $100 deposit <span class="sr-only">(opens in a new tab)</span></a>
+            <a class="btn btn-ghost" href="https://www.zeffy.com/en-US/ticketing/campsevents" target="_blank" rel="noopener noreferrer">Pay a balance or full tuition <span class="sr-only">(opens in a new tab)</span></a>
+          </div>
+          <p class="note">Family Camp: buy one $100 deposit for the whole family reservation. Your deposit is credited toward tuition; do not pay it again when settling your balance.</p>
+          <p class="note">For balance or full payment, choose “Summer Camp Balance” and enter the exact amount provided by JRVC, including approved discounts, camperships, and previous payments. “Pay what you can” is Zeffy’s amount-entry label here, not optional tuition. Contact staff if you do not know your amount.</p>
+          <p class="note">Use the same contact email as your registration. Include participant name and session wherever the checkout requests them; if there is no place to add them, email those details to <a href="mailto:kevin@jrvc.org">kevin@jrvc.org</a> so staff can match the payment.</p>
+          <p class="note">Each payment is a separate checkout. There are no automatic future charges. A Zeffy receipt confirms a transaction, not enrollment or a zero balance. JRVC will confirm payment matching and any remaining balance. These links are not for general donations.</p>
         </div>
 
         <div class="callout">
@@ -300,6 +316,6 @@
     </div>
   </div>
 </footer>
-<script src="assets/js/site.js?v=7d37e45c" defer></script>
+<script src="assets/js/site.js?v=33a192bb" defer></script>
 </body>
 </html>
