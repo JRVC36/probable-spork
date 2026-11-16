@@ -47,13 +47,13 @@ const PARENT_ATTACHMENTS = [
 
 /** Human-readable session names for the parent confirmation email. */
 const SESSION_LABELS = {
-  'juniors-crafts':  'Juniors · Arts & Crafts (June 21–27, 2026 — $485)',
-  'juniors-cooking': 'Juniors · Cooking (July 12–18, 2026 — $485)',
-  'mh-paddle':       'Middle High · Paddle (July 12–18, 2026 — $545)',
-  'mh-caving':       'Middle High · Caving (July 19–25, 2026 — $545)',
-  'sh-adventure':    'Senior High · High Adventure (June 21–27, 2026 — $545)',
-  'sh-paddle':       'Senior High · Paddle (June 28–July 4, 2026 — $545)',
-  'day-camp':        'Day Camp ($249/week)',
+  'adult-camp': 'Adult Camp (June 13–19, 2027)',
+  'valleywide-1': 'Valleywide 1 (June 20–26, 2027 — $475)',
+  'drama': 'Drama Camp (June 27–July 3, 2027 — $560)',
+  'family-camp': 'Family Camp (July 4–10, 2027)',
+  'sh-paddle': 'Senior High Paddle (July 11–17, 2027 — $560)',
+  'valleywide-2': 'Valleywide 2 (July 18–24, 2027 — $475)',
+  'mh-paddle': 'Middle High Paddle (July 25–31, 2027 — $560)',
 };
 
 /**
@@ -84,6 +84,9 @@ const FORMS = {
       { key: 'newsletter',   label: 'Mailing list' },
       { key: 'agreement',    label: 'Agreed to policies' },
       { key: '_status',      label: 'Status' },
+      { key: 'stay',         label: 'Stay option' },
+      { key: 'occupancy',    label: 'Adult occupancy' },
+      { key: 'family_members', label: 'Family members and ages' },
     ],
   },
 
@@ -198,11 +201,20 @@ function doPost(e) {
       return respond_(false, 'unknown_form', { form: formKey }, wantsHtml);
     }
 
+    // Always gate the existing handler before persistence or notifications.
+    if (!verifyTurnstile_(data['cf-turnstile-response'], formKey)) {
+      return respond_(false, 'verification_failed', {}, wantsHtml);
+    }
+
     var missing = cfg.required.filter(function (k) {
       return !String(data[k] || '').trim();
     });
     if (missing.length) {
       return respond_(false, 'missing_fields', { fields: missing }, wantsHtml);
+    }
+
+    if (formKey === 'registration' && !validRegistrationOptions_(data)) {
+      return respond_(false, 'invalid_registration_options', {}, wantsHtml);
     }
 
     var now = new Date();
@@ -342,15 +354,18 @@ function sendParentConfirmation_(data) {
   var body =
     'Dear ' + data.parent_name + ',\n\n' +
     'Thank you for registering ' + data.camper_first + ' ' + data.camper_last +
-    ' for Summer 2026 at Johns River Valley Camp!\n\n' +
+    ' for Summer 2027 at Johns River Valley Camp! This acknowledges your request, not confirmed enrollment. Staff will confirm availability and deposit instructions within two business days.\n\n' +
     'REGISTRATION SUMMARY\n' +
     '• Camper: ' + data.camper_first + ' ' + data.camper_last +
     (data.grade ? ' (Rising grade ' + data.grade + ')' : '') + '\n' +
-    '• Session: ' + sessionDesc + '\n\n' +
+    '• Session: ' + sessionDesc + '\n' +
+    (data.stay ? '• Stay: ' + data.stay + '\n' : '') +
+    (data.occupancy ? '• Occupancy: ' + data.occupancy + '\n' : '') +
+    (data.family_members ? '• Accompanying family members: ' + data.family_members + '\n' : '') + '\n' +
     'NEXT STEPS & ATTACHED FORMS\n' +
     '1. $100 Deposit: A $100 deposit holds your camper\'s spot (applied to tuition and refundable until 30 days before the session). We will follow up if you need payment arrangement details.\n' +
     '2. Health Forms (Attached): Please review the attached Camper Health-Care Recommendations and complete the Camper Health History Form prior to arrival.\n' +
-    '3. Check-In: Residential check-in is Sunday from 3:00–4:30 p.m. (pick-up Saturday 9:00–10:00 a.m.). Day camp runs Monday–Friday, 8:30 a.m.–4:30 p.m.\n\n' +
+    '3. Check-In: Residential check-in is Sunday from 3:00–4:30 p.m. (pick-up Saturday 9:00–10:00 a.m.). For Adult and Family Camp, staff will confirm check-in and checkout times for your selected Sunday or Wednesday stay.\n\n' +
     'If you have any questions or would like to inquire about the Campership Fund, simply reply to this email or call Kevin at 828-387-5736.\n\n' +
     'Grace and peace,\n' +
     'Johns River Valley Camp\n' +
@@ -468,5 +483,47 @@ function setupSheet() {
     );
   } catch (_) {
     // Running standalone in script.google.com without a bound spreadsheet UI
+  }
+}
+
+/** Enforce 2027 options server-side; browser validation is not a security boundary. */
+function validRegistrationOptions_(data) {
+  var session = String(data.session || '');
+  if (!Object.prototype.hasOwnProperty.call(SESSION_LABELS, session)) return false;
+  var adult = session === 'adult-camp', family = session === 'family-camp';
+  if ((adult || family) && ['first-half', 'second-half', 'full-week'].indexOf(data.stay) < 0) return false;
+  if (adult && ['single', 'double'].indexOf(data.occupancy) < 0) return false;
+  if (family && (!String(data.family_members || '').trim() || String(data.family_members).length > 3000)) return false;
+  if (adult) return data.grade === 'Adult / not applicable';
+  if (family) return true;
+  if (data.grade === 'Graduating senior') return session !== 'mh-paddle';
+  var grade = Number(data.grade);
+  var min = session.indexOf('valleywide-') === 0 ? 3 : session === 'sh-paddle' ? 9 : 6;
+  var max = session === 'mh-paddle' ? 9 : 12;
+  return Number.isInteger(grade) && grade >= min && grade <= max;
+}
+
+/** Canonical server-side Siteverify. Fail closed; never log tokens or secrets. */
+function verifyTurnstile_(token, expectedAction) {
+  if (typeof token !== 'string' || !token.trim() || token.length > 2048) return false;
+  try {
+    var props = PropertiesService.getScriptProperties();
+    var secret = props.getProperty('TURNSTILE_SECRET');
+    var hosts = (props.getProperty('TURNSTILE_HOSTNAMES') || '').split(',').map(function (host) { return host.trim(); }).filter(Boolean);
+    // Production must never accept local/preview hosts, even if configured by mistake.
+    if (!secret || !secret.trim() || !hosts.length || hosts.some(function (host) { return ['www.jrvc.org', 'jrvc.org'].indexOf(host) < 0; })) return false;
+    var response = UrlFetchApp.fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'post',
+      contentType: 'application/x-www-form-urlencoded',
+      payload: {secret: secret, response: token},
+      muteHttpExceptions: true,
+      followRedirects: false,
+      validateHttpsCertificates: true
+    });
+    if (response.getResponseCode() !== 200) return false;
+    var result = JSON.parse(response.getContentText());
+    return result.success === true && result.action === expectedAction && hosts.indexOf(result.hostname) >= 0;
+  } catch (error) {
+    return false;
   }
 }

@@ -1464,3 +1464,7 @@ select {
 .availability-day[aria-pressed="true"] { outline:3px solid var(--forest); outline-offset:1px; }
 .availability-day:focus-visible { outline:3px solid var(--clay-deep); outline-offset:2px; }
 @media(max-width:600px) { .availability-grid {gap:.2rem;} .availability-day {padding:.25rem; font-size:.65rem; overflow-wrap:anywhere;} }
+
+/* Keep verification usable in both full-width and compact newsletter forms. */
+.turnstile-container { margin-block: 1rem; min-width: 0; max-width: 100%; }
+.newsletter-form .turnstile-container { flex-basis: 100%; width: 100%; }

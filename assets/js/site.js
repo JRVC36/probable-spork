@@ -155,6 +155,14 @@
       }
 
       e.preventDefault();
+      var challenge = form.querySelector('[data-turnstile-action]');
+      if (challenge) {
+        var token = form.querySelector('[name="cf-turnstile-response"]');
+        if (!token || !token.value) {
+          showStatus(form, "fail", "Please complete the bot verification before submitting.");
+          return;
+        }
+      }
       submitToEndpoint(form, endpoint);
     });
   });
@@ -162,7 +170,7 @@
   function buildMailtoFallback(form) {
     var lines = [];
     new FormData(form).forEach(function (value, key) {
-      if (key.indexOf("_") === 0) return;
+      if (key.indexOf("_") === 0 || key === "cf-turnstile-response") return;
       var text = String(value || "").trim();
       if (!text) return;
       lines.push(key.replace(/_/g, " ") + ": " + text);
@@ -255,11 +263,39 @@
         showStatus(form, "fail", form.getAttribute("data-fail"), mailto);
       })
       .then(function () {
+        // Tokens are single-use, even if later validation or delivery failed.
+        if (window.jrvcResetTurnstile) window.jrvcResetTurnstile(form);
         if (button) {
           button.disabled = false;
           button.textContent = original;
         }
       });
+  }
+
+  /* Session-specific registration details and eligible grade choices. */
+  if (regForm) {
+    var syncRegistrationOptions = function () {
+      var choice = regForm.querySelector('input[name="session"]:checked');
+      var session = choice ? choice.value : '';
+      var adult = session === 'adult-camp', family = session === 'family-camp';
+      Array.prototype.forEach.call(regForm.querySelectorAll('[data-registration-options]'), function (group) {
+        var kind = group.getAttribute('data-registration-options');
+        var show = kind === 'stay' ? adult || family : kind === 'adult' ? adult : family;
+        group.hidden = !show; group.disabled = !show;
+      });
+      var grade = document.getElementById('grade');
+      if (!grade) return;
+      var previous = grade.value;
+      var grades = adult ? ['Adult / not applicable'] : family ? ['Not applicable / young child', '1','2','3','4','5','6','7','8','9','10','11','12','Graduating senior','Adult / not applicable'] : session.indexOf('valleywide') === 0 ? ['3','4','5','6','7','8','9','10','11','12','Graduating senior'] : session === 'mh-paddle' ? ['6','7','8','9'] : session === 'sh-paddle' ? ['9','10','11','12','Graduating senior'] : session === 'drama' ? ['6','7','8','9','10','11','12','Graduating senior'] : [];
+      grade.replaceChildren();
+      var blank = document.createElement('option'); blank.value = ''; blank.textContent = 'Select a grade / category'; grade.appendChild(blank);
+      grades.forEach(function (value) { var option = document.createElement('option'); option.value = value; option.textContent = value; grade.appendChild(option); });
+      if (grades.indexOf(previous) !== -1) grade.value = previous;
+      if (adult) grade.value = grades[0];
+    };
+    regForm.addEventListener('change', function (event) { if (event.target.name === 'session') syncRegistrationOptions(); });
+    regForm.addEventListener('reset', function () { setTimeout(syncRegistrationOptions, 0); });
+    syncRegistrationOptions();
   }
 
   /* ---------- Current year in footer ---------- */

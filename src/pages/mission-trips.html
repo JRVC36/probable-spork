@@ -53,7 +53,7 @@
 <section class="bg-sand">
   <div class="shell">
     <div class="section-head">
-      <p class="eyebrow">2026 trip themes</p>
+      <p class="eyebrow">Mission trip themes</p>
       <h2>Choose the work your group cares about.</h2>
       <p class="lede">Every theme runs the same five-to-seven-day structure with different projects. Tell us which one fits and we will build the week around it.</p>
     </div>
@@ -194,14 +194,7 @@
             </div>
             <div class="field">
               <label for="mwhen">Preferred month</label>
-              <select id="mwhen" name="month">
-                <option>March 2026</option>
-                <option>April 2026</option>
-                <option>September 2026</option>
-                <option>October 2026</option>
-                <option>November 2026</option>
-                <option>Still deciding</option>
-              </select>
+              <input type="text" id="mwhen" name="month" maxlength="100" placeholder="Preferred month and year, or still deciding">
             </div>
           </div>
           <div class="field">
@@ -221,6 +214,8 @@
             <label for="mission_gotcha">Leave this field blank</label>
             <input type="text" id="mission_gotcha" name="_gotcha" tabindex="-1" autocomplete="off">
           </div>
+          <div class="turnstile-container" id="turnstile-mission" data-turnstile-action="mission" data-sitekey="0x4AAAAAAGDaf1mnfpcLVWMM"></div>
+          <noscript><p>JavaScript is required for bot verification. Please call <a href="tel:+18283875736">828-387-5736</a> for assistance.</p></noscript>
           <button type="submit" class="btn btn-primary btn-block">Request dates &amp; a quote</button>
           <p class="form-status" hidden tabindex="-1" role="status" aria-live="polite">
             <strong>Sent.</strong> Kevin will reply within one business day with dates, a sample schedule, and a quote.
