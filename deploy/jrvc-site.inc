@@ -25,7 +25,7 @@ add_header X-Content-Type-Options  "nosniff" always;
 add_header X-Frame-Options         "SAMEORIGIN" always;
 add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
 add_header Permissions-Policy      "geolocation=(), camera=(), microphone=()" always;
-add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
+add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' https://challenges.cloudflare.com https://zeffy-scripts.s3.ca-central-1.amazonaws.com; frame-src https://challenges.cloudflare.com https://www.zeffy.com; font-src 'self'; connect-src 'self' https://challenges.cloudflare.com https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
 
 # ------------------------------------------------------------------ caching
 # Images never change in place, and CSS/JS are requested with a ?v=<hash>
@@ -48,7 +48,7 @@ location ~* \.html$ {
     add_header X-Frame-Options         "SAMEORIGIN" always;
     add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
     add_header Permissions-Policy      "geolocation=(), camera=(), microphone=()" always;
-    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' https://challenges.cloudflare.com https://zeffy-scripts.s3.ca-central-1.amazonaws.com; frame-src https://challenges.cloudflare.com https://www.zeffy.com; font-src 'self'; connect-src 'self' https://challenges.cloudflare.com https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
     try_files $uri =404;
 }
 
@@ -59,7 +59,7 @@ location = / {
     add_header X-Frame-Options         "SAMEORIGIN" always;
     add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
     add_header Permissions-Policy      "geolocation=(), camera=(), microphone=()" always;
-    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' https://challenges.cloudflare.com https://zeffy-scripts.s3.ca-central-1.amazonaws.com; frame-src https://challenges.cloudflare.com https://www.zeffy.com; font-src 'self'; connect-src 'self' https://challenges.cloudflare.com https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
     try_files /index.html =404;
 }
 
@@ -79,7 +79,7 @@ location = /404.html {
     add_header X-Frame-Options         "SAMEORIGIN" always;
     add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
     add_header Permissions-Policy      "geolocation=(), camera=(), microphone=()" always;
-    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' https://challenges.cloudflare.com https://zeffy-scripts.s3.ca-central-1.amazonaws.com; frame-src https://challenges.cloudflare.com https://www.zeffy.com; font-src 'self'; connect-src 'self' https://challenges.cloudflare.com https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
 }
 
 # ------------------------------------------------------------------ legacy redirects
