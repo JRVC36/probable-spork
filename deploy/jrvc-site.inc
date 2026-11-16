@@ -1,7 +1,8 @@
 # Shared site directives for Johns River Valley Camp.
 # Installed to /etc/nginx/snippets/jrvc-site.inc
-# Included by BOTH the :80 and :443 server blocks so behaviour is identical
-# regardless of how a visitor arrives (important before HTTPS is enforced).
+# Include in the HTTPS server block for site assets and page policies.
+# It may also be included in the initial HTTP-only server, but after HTTPS is
+# enabled keep HTTP limited to ACME challenges and a redirect to HTTPS.
 
 charset utf-8;
 server_tokens off;
@@ -52,16 +53,9 @@ location ~* \.html$ {
     try_files $uri =404;
 }
 
-location = / {
-    expires -1;
-    add_header Cache-Control           "public, max-age=0, must-revalidate" always;
-    add_header X-Content-Type-Options  "nosniff" always;
-    add_header X-Frame-Options         "SAMEORIGIN" always;
-    add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
-    add_header Permissions-Policy      "geolocation=(), camera=(), microphone=()" always;
-    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' https://challenges.cloudflare.com https://zeffy-scripts.s3.ca-central-1.amazonaws.com; frame-src https://challenges.cloudflare.com https://www.zeffy.com; font-src 'self'; connect-src 'self' https://challenges.cloudflare.com https://script.google.com https://script.googleusercontent.com; form-action 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'self'; base-uri 'self'" always;
-    try_files /index.html =404;
-}
+# The homepage uses index.html via the server's `index` directive. Do not add
+# `location = /` here: exact-match locations override HTTP server redirects.
+# The generated /index.html request is handled by the HTML cache rule above.
 
 # ------------------------------------------------------------------ privacy guards
 # Defence in depth: even if the export is ever misconfigured, never serve

@@ -116,7 +116,7 @@ cd /opt/jrvc.org/repo            # or wherever the clone lives
 sudo install -m 644 deploy/jrvc-site.inc /etc/nginx/snippets/jrvc-site.inc
 sudo install -m 644 deploy/nginx.conf    /etc/nginx/sites-available/jrvc.org
 
-sudo ln -sf /etc/nginx/sites-available/jrvc.org /etc/nginx/sites-enabled/jrvc.org
+sudo ln -sfn /etc/nginx/sites-available/jrvc.org /etc/nginx/sites-enabled/jrvc.org.conf
 
 # Debian/Ubuntu ship a default site that will shadow this one
 sudo rm -f /etc/nginx/sites-enabled/default
