@@ -156,7 +156,7 @@ section { padding-block: clamp(3.5rem, 6vw, 6.5rem); }
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--clay);
+  color: var(--clay-deep);
   margin: 0 0 1rem;
   display: flex;
   align-items: center;

@@ -292,7 +292,9 @@ function enhanceImages(html) {
     const sizes = sizesMatch ? sizesMatch[1] : (isHero ? "100vw" : meta.defaultSizes);
 
     const jpgSrcset = `assets/img/${key}-sm.jpg ${meta.sm}w, assets/img/${key}.jpg ${meta.full}w`;
-    const webpSrcset = `assets/img/${key}-sm.webp ${meta.sm}w, assets/img/${key}.webp ${meta.full}w`;
+    // New URLs avoid serving old optimized images from immutable browser caches.
+    const webpVersion = ["hero", "chapel", "lodge-timber", "rafting"].includes(key) ? "-v2" : "";
+    const webpSrcset = `assets/img/${key}-sm${webpVersion}.webp ${meta.sm}w, assets/img/${key}${webpVersion}.webp ${meta.full}w`;
 
     let cleanAttrs = attrs
       .replace(/\s*\bsrcset="[^"]*"/g, "")
