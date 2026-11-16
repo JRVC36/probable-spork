@@ -157,7 +157,7 @@ const PAGES = [
 import { createHash } from "node:crypto";
 const assetVersion = (() => {
   const h = createHash("sha256");
-  for (const f of ["assets/css/site.css", "assets/js/site.js"]) {
+  for (const f of ["assets/css/site.css", "assets/js/site.js", "assets/js/turnstile.js"]) {
     try { h.update(readFileSync(f)); } catch {}
   }
   return h.digest("hex").slice(0, 8);
@@ -186,7 +186,7 @@ function structuredData(p) {
     image: `${SITE.url}/${p.ogImage || "assets/img/hero.jpg"}`,
     telephone: "+1-828-387-5736",
     email: SITE.email,
-    priceRange: "$18–$545",
+    priceRange: "$18–$750",
     address: placeAddress,
     geo: {
       "@type": "GeoCoordinates",
@@ -232,15 +232,15 @@ function structuredData(p) {
           name: "What does resident camp cost, and what is included?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "$485 for Juniors (rising grades 3–5) and $545 for Middle High (6–8) and Senior High (9–12). Tuition covers six nights in a cabin, all meals, all activities, staffing, and any off-site trips within the session.",
+            text: "Valleywide 1 and 2 are $475 per camper, per session. Drama Camp and both Paddle Camps are $560 per camper, per session. See the camp guide for dates, descriptions, and Adult and Family Camp rates.",
           },
         },
         {
           "@type": "Question",
-          name: "What are the day camp hours, grades, and tuition?",
+          name: "What camps are offered in 2027?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Day camp serves rising grades 1–6 and runs Monday through Friday, 8:30 a.m. to 4:30 p.m., for six weeks from June 22 to July 31, 2026. Tuition is $249 per week, including lunch.",
+            text: "Adult Camp, Valleywide 1 and 2, Drama Camp, Family Camp, and Middle High and Senior High Paddle Camps run June 13–July 31, 2027. A separate youth day-camp program is not listed in the confirmed 2027 schedule.",
           },
         },
         {
@@ -256,7 +256,7 @@ function structuredData(p) {
           name: "Is financial aid (camperships) available?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes. The Campership Fund covers part or all of tuition depending on need for both residential and day camp. Requests are confidential.",
+            text: "Yes. The Campership Fund covers part or all of tuition depending on need. Contact the camp about assistance for your chosen 2027 session. Requests are confidential.",
           },
         },
         {
@@ -331,6 +331,8 @@ function head(p) {
 <link rel="preload" href="assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/site.css?v=${assetVersion}">${analytics}${jsonLd}
+${["register", "retreats", "mission-trips", "visit", "get-involved"].includes(p.slug) ? `<script src="assets/js/turnstile.js?v=${assetVersion}" defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=jrvcTurnstileReady&amp;render=explicit" defer></script>` : ""}
 ${p.slug === "get-involved" ? '<script src="https://zeffy-scripts.s3.ca-central-1.amazonaws.com/embed-form-script.min.js" defer></script>' : ""}
 </head>
 <body>
