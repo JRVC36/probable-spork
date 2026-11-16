@@ -248,7 +248,7 @@ function structuredData(p) {
           name: "What are the drop-off and pick-up times for resident camp?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Drop-off is Sunday from 3:00 to 4:30 p.m. at the lodge. Pick-up is Saturday from 9:00 to 10:00 a.m.",
+            text: "Sunday check-in is 3:00–4:30 p.m.; Saturday checkout is 9:00–10:00 a.m. Wednesday checkout is at 10:00 a.m. and check-in is at 4:00 p.m.",
           },
         },
         {

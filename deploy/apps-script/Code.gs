@@ -87,6 +87,7 @@ const FORMS = {
       { key: 'stay',         label: 'Stay option' },
       { key: 'occupancy',    label: 'Adult occupancy' },
       { key: 'family_members', label: 'Family members and ages' },
+      { key: 'payment_choice', label: 'Payment preference' },
     ],
   },
 
@@ -361,11 +362,16 @@ function sendParentConfirmation_(data) {
     '• Session: ' + sessionDesc + '\n' +
     (data.stay ? '• Stay: ' + data.stay + '\n' : '') +
     (data.occupancy ? '• Occupancy: ' + data.occupancy + '\n' : '') +
-    (data.family_members ? '• Accompanying family members: ' + data.family_members + '\n' : '') + '\n' +
+    (data.family_members ? '• Accompanying family members: ' + data.family_members + '\n' : '') +
+    (data.payment_choice ? '• Payment preference: ' + data.payment_choice + ' (not a payment confirmation)\n' : '') + '\n' +
     'NEXT STEPS & ATTACHED FORMS\n' +
-    '1. $100 Deposit: A $100 deposit holds your camper\'s spot (applied to tuition and refundable until 30 days before the session). We will follow up if you need payment arrangement details.\n' +
+    '1. Payment: Choose a $100 deposit or full payment; staff will confirm availability and payment instructions. Family Camp has one reservation and one $100 deposit per family. The deposit is applied to tuition. The balance is due two weeks before your stay begins. Cancellations more than 30 days before your stay begins are refunded in full, including the deposit. These rules apply to three-night and six-night stays. The $40 sibling and $50 additional-week discounts can apply together, subject to staff confirmation.\n' +
+    'After staff confirms availability and your amount due, use these camp-only payment links:\n' +
+    '• $100 deposit: https://www.zeffy.com/en-US/ticketing/summer-camp-deposit-4 (Family Camp: one deposit per family reservation).\n' +
+    '• Balance or full tuition: https://www.zeffy.com/en-US/ticketing/campsevents — select Summer Camp Balance and enter the exact amount provided by staff after discounts, camperships, and prior payments. Zeffy labels this Pay what you can, but the amount due is set by JRVC.\n' +
+    'Use the same email as this registration. If checkout has no place for participant name and session, reply to this email with those details so staff can match your payment. Each checkout is separate; no automatic future charges are scheduled. A receipt is not confirmation of enrollment or a zero balance.\n' +
     '2. Health Forms (Attached): Please review the attached Camper Health-Care Recommendations and complete the Camper Health History Form prior to arrival.\n' +
-    '3. Check-In: Residential check-in is Sunday from 3:00–4:30 p.m. (pick-up Saturday 9:00–10:00 a.m.). For Adult and Family Camp, staff will confirm check-in and checkout times for your selected Sunday or Wednesday stay.\n\n' +
+    '3. Check-In: Residential check-in is Sunday from 3:00–4:30 p.m. (pick-up Saturday 9:00–10:00 a.m.). Wednesday checkout is at 10:00 a.m. and check-in is at 4:00 p.m. Sunday/Saturday stays use the same arrival and departure windows as youth camps.\n\n' +
     'If you have any questions or would like to inquire about the Campership Fund, simply reply to this email or call Kevin at 828-387-5736.\n\n' +
     'Grace and peace,\n' +
     'Johns River Valley Camp\n' +
@@ -490,6 +496,7 @@ function setupSheet() {
 function validRegistrationOptions_(data) {
   var session = String(data.session || '');
   if (!Object.prototype.hasOwnProperty.call(SESSION_LABELS, session)) return false;
+  if (data.payment_choice && ['deposit', 'full'].indexOf(data.payment_choice) < 0) return false;
   var adult = session === 'adult-camp', family = session === 'family-camp';
   if ((adult || family) && ['first-half', 'second-half', 'full-week'].indexOf(data.stay) < 0) return false;
   if (adult && ['single', 'double'].indexOf(data.occupancy) < 0) return false;
