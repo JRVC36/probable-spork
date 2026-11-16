@@ -27,7 +27,7 @@ test('optimized images use fresh URLs and are smaller than previous WebPs',()=>{
 test('nginx allows required third-party scripts and frames without wildcard origins',()=>{
  const config=read('deploy/jrvc-site.inc');
  const policies=[...config.matchAll(/Content-Security-Policy "([^"]+)"/g)];
- assert.equal(policies.length,4);
+ assert.equal(policies.length,3);
  for(const [,policy] of policies){
   assert.ok(policy.includes("script-src 'self' https://challenges.cloudflare.com https://zeffy-scripts.s3.ca-central-1.amazonaws.com;"));
   assert.ok(policy.includes('frame-src https://challenges.cloudflare.com https://www.zeffy.com;'));
