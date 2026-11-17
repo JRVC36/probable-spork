@@ -101,3 +101,16 @@ test('rendered phone links and contact/registration form endpoints are valid',()
   assert.ok(html.includes('data-form="'+name+'"'),page+' form route '+name);
  }
 });
+test('Facilities meal rate has a contrast callout and no longer promotes climbing challenges',()=>{
+ const facilities=read('facilities.html');
+ const css=read('assets/css/site.css');
+ assert.ok(facilities.includes('class="note facility-meal-note"'));
+ assert.ok(facilities.includes('$30 per person per day'));
+ assert.ok(facilities.includes('class="grid grid-3"'));
+ assert.ok(!facilities.includes('Climbing &amp; challenge'));
+ assert.ok(!facilities.includes('Climbing wall, low ropes'));
+ assert.ok(css.includes('.bg-forest .facility-meal-note'));
+ assert.ok(css.includes('background: var(--paper);'));
+ assert.ok(css.includes('color: var(--ink);'));
+ assert.ok(!read('mission-trips.html').includes('no rental charge for the climbing wall'));
+});
