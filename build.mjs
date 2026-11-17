@@ -21,7 +21,7 @@ const SITE = {
 
 
 /* ---------------------------------------------------------------------------
-   Form endpoints & optional privacy-friendly analytics.
+   Form endpoints & Google Tag Manager analytics.
    Each of the 5 website forms writes to its own separate Google Sheet:
      1. Camper Registrations : 17aeWZVJoGTIb7XWhFJFZVkwO1dfiHqcAQpVFpl5nAvI
      2. Retreat Inquiries    : 184KUGM_9Ri-oUM_tE_FX_zG4jyfOl2nkwCWufJNZo6Y
@@ -43,8 +43,9 @@ const ENDPOINT_RETREATS     = "" || ENDPOINT_DEFAULT;
 const ENDPOINT_MISSIONS     = "" || ENDPOINT_DEFAULT;
 const ENDPOINT_CONTACT      = "" || ENDPOINT_DEFAULT;
 const ENDPOINT_NEWSLETTER   = "" || ENDPOINT_DEFAULT;
-const ANALYTICS_PLAUSIBLE_DOMAIN = "";
-const ANALYTICS_SCRIPT_SRC = "https://plausible.io/js/script.js";
+// Public Google Tag Manager container ID. A published GA4 Google tag must be
+// configured in this GTM container for page views to reach Analytics.
+const GOOGLE_TAG_MANAGER_ID = "GTM-KM869M7R";
 
 const ENDPOINTS = {
   __FORM_SECRET__: FORM_SECRET,
@@ -157,7 +158,7 @@ const PAGES = [
 import { createHash } from "node:crypto";
 const assetVersion = (() => {
   const h = createHash("sha256");
-  for (const f of ["assets/css/site.css", "assets/js/site.js", "assets/js/turnstile.js"]) {
+  for (const f of ["assets/css/site.css", "assets/js/site.js", "assets/js/turnstile.js", "assets/js/gtm-loader.js"]) {
     try { h.update(readFileSync(f)); } catch {}
   }
   return h.digest("hex").slice(0, 8);
@@ -310,9 +311,7 @@ function head(p) {
   const canonical = `${SITE.url}/${p.slug === "index" ? "" : `${p.slug}.html`}`;
   const ogImage = `${SITE.url}/${p.ogImage || "assets/img/hero.jpg"}`;
   const robots = p.noindex ? '\n<meta name="robots" content="noindex">' : "";
-  const analytics = ANALYTICS_PLAUSIBLE_DOMAIN
-    ? `\n<script defer data-domain="${esc(ANALYTICS_PLAUSIBLE_DOMAIN)}" src="${esc(ANALYTICS_SCRIPT_SRC)}"></script>`
-    : "";
+  const analytics = `<script async data-gtm-id="${GOOGLE_TAG_MANAGER_ID}" src="assets/js/gtm-loader.js?v=${assetVersion}"></script>`;
   const jsonLd = p.noindex ? "" : structuredData(p);
   return `<!doctype html>
 <html lang="en">
@@ -338,6 +337,7 @@ ${["register", "retreats", "mission-trips", "visit", "get-involved"].includes(p.
 ${p.slug === "get-involved" ? '<script src="https://zeffy-scripts.s3.ca-central-1.amazonaws.com/embed-form-script.min.js" defer></script>' : ""}
 </head>
 <body>
+<noscript><iframe class="gtm-noscript-frame" src="https://www.googletagmanager.com/ns.html?id=${GOOGLE_TAG_MANAGER_ID}" height="0" width="0" title="Google Tag Manager"></iframe></noscript>
 <a class="skip" href="#main">Skip to content</a>`;
 }
 

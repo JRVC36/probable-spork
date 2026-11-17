@@ -29,8 +29,10 @@ test('nginx allows required third-party scripts and frames without wildcard orig
  const policies=[...config.matchAll(/Content-Security-Policy "([^"]+)"/g)];
  assert.equal(policies.length,3);
  for(const [,policy] of policies){
-  assert.ok(policy.includes("script-src 'self' https://challenges.cloudflare.com https://zeffy-scripts.s3.ca-central-1.amazonaws.com;"));
-  assert.ok(policy.includes('frame-src https://challenges.cloudflare.com https://www.zeffy.com;'));
+  assert.ok(policy.includes("script-src 'self' https://challenges.cloudflare.com https://zeffy-scripts.s3.ca-central-1.amazonaws.com https://www.googletagmanager.com;"));
+  assert.ok(policy.includes("connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://region1.google-analytics.com"));
+  assert.ok(policy.includes('frame-src https://challenges.cloudflare.com https://www.zeffy.com https://www.googletagmanager.com;'));
+  assert.ok(policy.includes("img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com;"));
   assert.ok(!policy.includes('*'));
  }
 });
