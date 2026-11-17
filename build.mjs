@@ -240,7 +240,7 @@ function structuredData(p) {
           name: "What camps are offered in 2027?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Adult Camp, Valleywide 1 and 2, Drama Camp, Family Camp, and Middle High and Senior High Paddle Camps run June 13–July 31, 2027. A separate youth day-camp program is not listed in the confirmed 2027 schedule.",
+            text: "Adult Camp, Valleywide 1 and 2, Drama Camp, Family Camp, and Middle High and Senior High Paddle Camps run June 13–July 31, 2027.",
           },
         },
         {

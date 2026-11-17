@@ -31,7 +31,7 @@ add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; st
 # ------------------------------------------------------------------ caching
 # Images never change in place, and CSS/JS are requested with a ?v=<hash>
 # query the build emits — so a one-year immutable cache is safe.
-location /assets/ {
+location ^~ /assets/ {
     access_log off;
     expires 1y;
     add_header Cache-Control           "public, max-age=31536000, immutable" always;

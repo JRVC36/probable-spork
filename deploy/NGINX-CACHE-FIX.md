@@ -1,51 +1,52 @@
-# Targeted nginx cache/vhost correction
+# nginx cache configuration for JRVC
 
-The host's `nginx -T` output reported only the main config and mime.types, and no `server {}` block or JRVC include. Its main config uses `include /etc/nginx/sites-enabled/*.conf;`. The JRVC setup instructions previously created a symlink named `sites-enabled/jrvc.org` (without `.conf`), which that glob will skip. The live `curl` headers also did not match the repository's intended asset-cache rules.
+## VULTR layout (the active layout supplied by the site owner)
 
-This repository corrects the symlink instructions and removes the exact-root location from the shared snippet. **It does not edit the production server.** First establish that this machine is actually the origin for `www.jrvc.org` and inspect its Certbot/TLS configuration.
+VULTR's `https.conf` contains two TLS servers:
 
-## Inspect before changing anything
+- A generic `listen 443 ssl default_server` server (`server_name _`) that includes `/etc/nginx/sites-enabled/*.conf`.
+- A separate Certbot TLS server for `www.jrvc.org jrvc.org` that includes `/etc/nginx/site-extras/*.conf`.
 
-```bash
-sudo nginx -T 2>&1 | grep -niE 'configuration file|server \{|listen|server_name|include|location|expires|add_header'
-sudo ls -la /etc/nginx/sites-enabled/
-sudo readlink -f /etc/nginx/sites-enabled/*
-```
+Requests for the JRVC host select the second server because its `server_name` matches. Therefore a file in `sites-enabled` is **not** the right place for JRVC server-location directives on this host. The `jrvc-site.inc` must be included from the JRVC server's `site-extras` glob. Do not place a `server {}` block in `site-extras`: that directory is included inside an existing server block.
 
-If the JRVC symlink exists without `.conf`, Debian/Ubuntu's `sites-enabled/*.conf` include skips it. If the vhost is absent, verify DNS / hosting ownership before enabling it: the public site may be served by a different nginx host or a proxy/CDN. Do not install an HTTP-only template over working TLS configuration.
-
-## Enable only after confirming the host and TLS plan
-
-For a first-time setup where HTTP-only service is intentional and DNS points to this host, the corrected setup command is:
+Install the shared policy and its VULTR server-context wrapper:
 
 ```bash
-sudo ln -sfn /etc/nginx/sites-available/jrvc.org /etc/nginx/sites-enabled/jrvc.org.conf
+sudo install -d -m 755 /etc/nginx/snippets /etc/nginx/site-extras
+sudo install -m 644 deploy/jrvc-site.inc /etc/nginx/snippets/jrvc-site.inc
+sudo install -m 644 deploy/vultr-site-extra.conf /etc/nginx/site-extras/jrvc.org.conf
 sudo nginx -t
 ```
 
-Inspect the resulting `nginx -T` before reloading. The symlink target must contain the intended `server_name` and `root`; the installed `jrvc-site.inc` must resolve. Run `sudo systemctl reload nginx` only after confirming these conditions.
-
-After Certbot has configured TLS, ensure the active **443** server includes `/etc/nginx/snippets/jrvc-site.inc`. Keep the HTTP server limited to the ACME challenge and the intended HTTP→HTTPS redirect after certificates exist. Remove the shared site-snippet include from that HTTP server after TLS is enabled: the snippet contains asset and legacy-route locations that could take precedence over a generic redirect. Do not overwrite Certbot's certificate paths or TLS options.
-
-## Why the shared snippet changed
-
-It no longer declares `location = /`. An exact-match root location wins over a `location / { return 301 ...; }` redirect. On HTTPS, nginx's `index index.html` handling internally serves `/index.html`, which is covered by the HTML revalidation rule. This avoids a root exception to the HTTP redirect.
-
-## Verify the effective policy
-
-After the correct active TLS server and snippet are in place:
+The wrapper contains only `include /etc/nginx/snippets/jrvc-site.inc;`. Because VULTR's matching JRVC TLS block already includes `/etc/nginx/site-extras/*.conf`, the JRVC policies and locations will be expanded inside that server. Leave the unrelated VULTR default-server config alone. Before reloading, verify the effective configuration shows both `/etc/nginx/site-extras/jrvc.org.conf` and `/etc/nginx/snippets/jrvc-site.inc` within the `server_name www.jrvc.org jrvc.org` block:
 
 ```bash
-sudo nginx -t && sudo systemctl reload nginx
-curl -sSI https://www.jrvc.org/assets/img/hero-sm-v2.webp
-curl -sSI https://www.jrvc.org/assets/fonts/inter-latin-wght-normal.woff2
-CSS_URL=$(grep -oE 'assets/css/site\.css\?v=[^\"]+' /usr/share/nginx/html/index.html | head -1)
-curl -sSI "https://www.jrvc.org/$CSS_URL"
-curl -sSI https://www.jrvc.org/
-curl -sSI https://www.jrvc.org/register.html
-curl -sSI http://www.jrvc.org/
+sudo nginx -T 2>&1 | grep -n -A100 -B12 -E 'configuration file .*https\.conf|server_name www\.jrvc\.org jrvc\.org|site-extras/jrvc\.org\.conf|snippets/jrvc-site\.inc'
 ```
 
-Assets should return `200` with `Cache-Control: public, max-age=31536000, immutable`. `/` and HTML pages should return a revalidation policy (`public, max-age=0, must-revalidate`). HTTP should redirect to the canonical HTTPS host, while `/.well-known/acme-challenge/` remains reachable for renewals. Check the browser console and test Turnstile, Apps Script forms, and the Zeffy donation modal after CSP changes. If a CDN/proxy is in front, inspect and correct that layer too.
+If `nginx -t` succeeds and the expanded includes are in the matching JRVC TLS server, reload and check:
 
-Do not run these commands on a server you have not confirmed is the production origin. No server command, reload, or live website change was made as part of this repo fix.
+```bash
+sudo systemctl reload nginx
+curl -sSI https://www.jrvc.org/assets/img/hero-sm-v2.webp
+curl -sSI https://www.jrvc.org/assets/fonts/inter-latin-wght-normal.woff2
+curl -sSI https://www.jrvc.org/assets/css/site.css?v=539b2ccb
+curl -sSI https://www.jrvc.org/
+curl -sSI https://www.jrvc.org/register.html
+```
+
+Files under `/assets/` should return `Cache-Control: public, max-age=31536000, immutable`; `/` and HTML documents should revalidate (`Cache-Control: public, max-age=0, must-revalidate`). Replace the CSS version in the example with the current `site.css?v=...` found in the homepage source.
+
+### Why `/assets/` uses `^~`
+
+VULTR's JRVC TLS server also has a regex location that applies `expires 30d` to common extensions such as CSS and JS. A plain `location /assets/` prefix can lose to a matching regex location. `location ^~ /assets/` makes the specific asset policy win for all `/assets/` paths, including WebP, WOFF2, CSS, and JS.
+
+The shared snippet intentionally has no exact `location = /`; that would outrank a generic HTTP root redirect. Keep the HTTP server responsible for ACME and HTTPS redirects; include the JRVC site policies in the matching HTTPS server via the VULTR `site-extras` glob.
+
+## Debian/Ubuntu sites-enabled layout
+
+For a standard Debian/Ubuntu nginx configuration that includes `/etc/nginx/sites-enabled/*.conf`, use the separate vhost approach in `deploy/nginx.conf` and `deploy/SETUP.md`. Its enabled symlink must end in `.conf`. Do not mix that vhost layout with VULTR's server-context `site-extras` layout without checking the active `nginx -T` output first.
+
+## Deployment limits
+
+These files and instructions do not alter the live server by themselves. Do not install them on an unverified host or overwrite Certbot certificate settings. After the nginx change, inspect effective headers with `curl -sSI`, check browser CSP errors, and verify Turnstile, Apps Script forms, and the Zeffy modal. If a proxy/CDN is in front of VULTR, check its response headers too.
