@@ -65,3 +65,39 @@ test('visitor clarity: calendar first, registration steps, meals and donation de
  assert.ok(read('get-involved.html').includes('Before you give:'));
  assert.ok(read('register.html').includes('Staff matches your payment'));
 });
+test('2027 homepage pricing and registration CTA tell one consistent story',()=>{
+ const home=read('index.html');
+ assert.ok(home.includes('<th scope="col">Tuition</th>'));
+ for(const text of ['$99/night double; $125/night single','$475/camper/session','$560/camper/session','$75/adult (18+); $50/teen (12–17); $30/child (4–11) per night']) assert.ok(home.includes(text));
+ assert.ok(home.includes('submitting a request does not reserve a place'));
+ assert.ok(!home.includes('Contact us for registration details'));
+ assert.ok(!home.includes('Registration is open now'));
+ assert.ok(!home.includes('both day and residential campers'));
+ assert.ok(home.includes('Choose a camp'));
+});
+test('2027 camp FAQ and gallery do not imply a JRVC day-camp program',()=>{
+ const faq=read('faq.html'),home=read('index.html');
+ assert.ok(faq.includes('Adult Camp, Valleywide 1 and 2, Drama Camp, Family Camp'));
+ assert.ok(!faq.includes('youth day-camp program'));
+ assert.ok(!faq.includes('day camp groups'));
+ assert.ok(!home.includes('both day and residential campers'));
+ // Community partner mission projects are distinct from JRVC's camp schedule.
+ assert.ok(read('mission-trips.html').includes('running children&rsquo;s day camps'));
+});
+test('rendered phone links and contact/registration form endpoints are valid',()=>{
+ const pages=['index.html','about.html','faq.html','facilities.html','get-involved.html','mission-trips.html','privacy.html','register.html','retreats.html','summer-camp.html','visit.html'];
+ for(const page of pages){
+  const html=read(page);
+  assert.ok(!html.includes('about:invalid'),page);
+  for(const [,phone] of html.matchAll(/href="tel:([^"]+)"/g)) assert.match(phone,/^\+1\d{10}$/,page+' phone '+phone);
+ }
+ const home=read('index.html');
+ assert.ok(home.includes('class="head-phone" href="tel:+18283875736"'));
+ const forms={ 'register.html':'registration','retreats.html':'retreat','mission-trips.html':'mission','visit.html':'contact','get-involved.html':'newsletter' };
+ for(const [page,name] of Object.entries(forms)){
+  const html=read(page);
+  assert.ok(html.includes('action="https://script.google.com/macros/s/'),page+' form action');
+  assert.ok(!html.includes('action="__ENDPOINT_'),page+' endpoint placeholder');
+  assert.ok(html.includes('data-form="'+name+'"'),page+' form route '+name);
+ }
+});
