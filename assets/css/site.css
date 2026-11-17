@@ -1472,3 +1472,15 @@ select {
 
 /* GTM's no-script fallback should never affect page layout. */
 .gtm-noscript-frame { display: none; visibility: hidden; }
+
+/* Keep the retreat meal price readable when called out on the forest section. */
+.bg-forest .facility-meal-note {
+  padding: 1rem 1.25rem;
+  border-left: 4px solid var(--clay);
+  border-radius: var(--r-md);
+  background: var(--paper);
+  color: var(--ink);
+}
+.bg-forest .facility-meal-note::before { color: var(--clay-deep); }
+.bg-forest .facility-meal-note a { color: var(--forest-deep); font-weight: 700; }
+.bg-forest .facility-meal-note a:hover { color: var(--clay-deep); }
